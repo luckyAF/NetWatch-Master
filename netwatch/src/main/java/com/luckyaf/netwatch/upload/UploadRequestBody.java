@@ -110,6 +110,14 @@ public class UploadRequestBody extends RequestBody {
                     }
                 });
             }
+            if(callback != null && bytesWritten == contentLength){
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        callback.onSuccess();
+                    }
+                });
+            }
         }
     }
 }

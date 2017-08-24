@@ -15,6 +15,7 @@ public interface UploadCallBack {
     void onComplete();
     void onError(Throwable throwable);
     void onProgress(int progress, long speed, long transformed, long total);
+    void onSuccess();
 
 
 }

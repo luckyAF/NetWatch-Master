@@ -231,7 +231,7 @@ public class MainActivity extends AppCompatActivity {
 
                         @Override
                         public void onComplete() {
-                            Toast.makeText(mContext,"success",Toast.LENGTH_SHORT).show();
+                            Toast.makeText(mContext,"onComplete",Toast.LENGTH_SHORT).show();
 
                         }
 
@@ -245,6 +245,11 @@ public class MainActivity extends AppCompatActivity {
                             mProgressBar.setProgress(progress);
                             txt_result.setText(transformed + "/" + total + "" + progress + "");
 
+                        }
+
+                        @Override
+                        public void onSuccess(){
+                            Toast.makeText(mContext,"onSuccess",Toast.LENGTH_SHORT).show();
                         }
                     });
         }catch (IOException e){
