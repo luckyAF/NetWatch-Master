@@ -22,7 +22,6 @@ import retrofit2.HttpException;
  *
  * @author Created by luckyAF on 2017/8/17
  */
-@SuppressWarnings("unused")
 public class NetException {
     private static final int UNAUTHORIZED = 401;
     private static final int FORBIDDEN = 403;

@@ -602,8 +602,7 @@ public class FileUtil {
         @Override
         public int compare(File f1, File f2) {
             // Sort alphabetically by lower case, which is much cleaner
-            return f1.getName().toLowerCase().compareTo(
-                    f2.getName().toLowerCase());
+            return f1.getName().toLowerCase().compareTo(f2.getName().toLowerCase());
         }
     };
 
