@@ -42,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
         mProgressBar = findViewById(R.id.progress);
         mProgressDialog = new ProgressDialog(this);
         mContext = this;
-        NetWatch.init(this,"http://api.laifudao.com")
+        NetWatch.init(this,"http://api.laifudao.com")//base url
                 .build();
 
         findViewById(R.id.btn_get).setOnClickListener(new View.OnClickListener() {
@@ -79,10 +79,16 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void get(){
-        Map<String,Object> map = new HashMap<>();
-        NetWatch.open(this,"http://api.laifudao.com/open/xiaohua.json")
+        Map<String,String> header = new HashMap<>();
+        header.put("mobileNumber", "18826412577");
+        header.put("loginPassword", "123456");
+        Map<String,Object> params = new HashMap<>();
+        params.put("start", "0");
+        params.put("count", "1");
+        NetWatch.open(this,"http://api.douban.com/v2/movie/top250")
+                .headers(header)
                 .tag(this)
-                .get(map, new CommonCallBack() {
+                .get(params, new CommonCallBack() {
                     @Override
                     public void onCancel() {
 
@@ -116,7 +122,7 @@ public class MainActivity extends AppCompatActivity {
         map.put("since","FIRST");
         map.put("accountId",9936);
         map.put("globalAppType",0);
-        NetWatch.open(this,"http://test.iplusmed.com/question/queryDoctorAskedQuestionAnswers")
+        NetWatch.open(this,"http://japi.juhe.cn/joke/content/list.from")
                 .tag(this)
                 .post(map, new CommonCallBack() {
                     @Override
