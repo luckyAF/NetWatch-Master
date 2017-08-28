@@ -2,8 +2,6 @@ package com.luckyaf.netwatch.exception;
 
 import android.net.ParseException;
 import android.text.TextUtils;
-
-import com.google.gson.JsonParseException;
 import com.luckyaf.netwatch.NetWatchThrowable;
 import com.luckyaf.netwatch.utils.Logger;
 
@@ -93,8 +91,7 @@ public class NetException {
                     break;
             }
             return ex;
-        } else if (e instanceof JsonParseException
-                || e instanceof JSONException
+        } else if (e instanceof JSONException
                 || e instanceof ParseException) {
             ex = new NetWatchThrowable(e, ERROR.PARSE_ERROR);
             ex.setMessage("解析错误");
