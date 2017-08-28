@@ -38,8 +38,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        txt_result = findViewById(R.id.txt_result);
-        mProgressBar = findViewById(R.id.progress);
+        txt_result = (TextView)findViewById(R.id.txt_result);
+        mProgressBar = (ProgressBar)findViewById(R.id.progress);
         mProgressDialog = new ProgressDialog(this);
         mContext = this;
         NetWatch.init(this,"http://api.laifudao.com")//base url
