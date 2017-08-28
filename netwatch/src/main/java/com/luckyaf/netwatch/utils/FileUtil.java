@@ -29,6 +29,8 @@ import java.io.UnsupportedEncodingException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Locale;
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -167,6 +169,28 @@ public class FileUtil {
             e.printStackTrace();
         }
     }
+
+    public static String getNewDownloadFileName(String filePath,String fileName){
+        File dir = new File(filePath);
+        File[] fileArray = dir.listFiles();
+        int already = 0;
+        for(File file:fileArray){
+           if (file.getName().startsWith(fileName)){
+               already ++;
+            }
+        }
+        if(already == 0){
+            return fileName;
+        }else{
+            int position = fileName.lastIndexOf(".");
+            StringBuilder stringBuilder = new StringBuilder(fileName);
+            String add = "(" + already + ")";
+            return stringBuilder.insert(position,add).toString() ;
+        }
+    }
+
+
+
 
 
     public static void deleteFiles(ArrayList<String> filePaths) {
@@ -602,7 +626,8 @@ public class FileUtil {
         @Override
         public int compare(File f1, File f2) {
             // Sort alphabetically by lower case, which is much cleaner
-            return f1.getName().toLowerCase().compareTo(f2.getName().toLowerCase());
+            return f1.getName().toLowerCase().compareTo(
+                    f2.getName().toLowerCase());
         }
     };
 
@@ -654,34 +679,25 @@ public class FileUtil {
      * 根据url获取文件名
      */
     public static String getFileNameWithURL(String url) {
-        String name = null;
-        if (!TextUtils.isEmpty(url)) {
-            String decodedUrl = Uri.decode(url);
-            if (!TextUtils.isEmpty(decodedUrl)) {
-                // 先获取extension
-                String extension = null;
-                int ext = decodedUrl.lastIndexOf(".");
-                if (ext != -1 && decodedUrl.length() - ext < 5) {
-                    extension = decodedUrl.substring(ext);
-                }
-                int query = decodedUrl.indexOf("?");
-                if (query > 0) {
-                    decodedUrl = decodedUrl.substring(0, query);
-                }
-                query = decodedUrl.indexOf("#");
-                if (query > 0) {
-                    decodedUrl = decodedUrl.substring(0, query);
-                }
-                if (!decodedUrl.endsWith("/")) {
-                    int index = decodedUrl.lastIndexOf("/") + 1;
-                    if (index > 0) {
-                        name = decodedUrl.substring(index);
-                    }
-                }
-                if (!TextUtils.isEmpty(extension) && !TextUtils.isEmpty(name) && !name.contains(".")) {
-                    name += extension;
-                }
-            }
+        String name= null;
+        String filename = "";
+        String extension;
+        String decodedUrl = Uri.decode(url);
+        //String suffixes="avi|mpeg|3gp|mp3|mp4|wav|jpeg|gif|jpg|png|apk|exe|pdf|rar|zip|docx|doc";
+        // Pattern pat=Pattern.compile("[\\w]+[\\.]("+suffixes+")");//正则判断
+        Pattern pattern = Pattern.compile("[\\w]+[\\.][\\w]{2,4}");
+        Matcher mc = pattern.matcher(decodedUrl);//条件匹配
+        while(mc.find()){
+            name = mc.group();//截取文件名后缀名
+            Logger.e("substring:", name);
+        }
+        if(TextUtils.isEmpty(name)){
+            name = UUID.randomUUID().toString();
+        }else {
+            //android 系统,不允许文件名中有冒号
+            name = name.replace("?","-");
+            name = name.replace(":","-");
+            name = name.replace("：","-");
         }
         return name;
     }
