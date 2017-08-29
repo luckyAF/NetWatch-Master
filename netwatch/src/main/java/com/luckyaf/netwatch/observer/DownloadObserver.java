@@ -60,9 +60,14 @@ public class DownloadObserver<ResponseBody extends okhttp3.ResponseBody> extends
     }
 
     @Override
-    public void onError(Throwable e) {
+    public void onError(final Throwable e) {
         if(!this.isCancel){
-            callBack.onError(e);
+            postRunnable(new Runnable() {
+                @Override
+                public void run() {
+                    callBack.onError(e);
+                }
+            });
         }
     }
 

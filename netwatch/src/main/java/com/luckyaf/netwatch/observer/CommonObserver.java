@@ -24,23 +24,33 @@ public class CommonObserver<ResponseBody extends okhttp3.ResponseBody> extends B
     }
 
     @Override
-    public void onNext(ResponseBody value) {
+    public void onNext(final ResponseBody value) {
         if(isRunning) {
-            this.callBack.onNext(value);
+           postRunnable(new Runnable() {
+               @Override
+               public void run() {
+                   callBack.onNext(value);
+               }
+           });
         }
     }
 
     @Override
-    public void onError(Throwable e) {
+    public void onError(final Throwable e) {
         if(isRunning) {
-            this.callBack.onError(e);
+            postRunnable(new Runnable() {
+                @Override
+                public void run() {
+                    callBack.onError(e);
+                }
+            });
         }
     }
 
     @Override
     public void onComplete() {
         if(isRunning) {
-            this.callBack.onComplete();
+            callBack.onComplete();
         }
     }
 

@@ -1,5 +1,9 @@
 package com.luckyaf.netwatch.observer;
 
+import android.os.Looper;
+
+import java.util.logging.Handler;
+
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 
@@ -13,11 +17,14 @@ public class BaseObserver<ResponseBody> implements Observer<ResponseBody> {
 
     private Disposable mDisposable;
     public Boolean isRunning;
+    public android.os.Handler handler;
 
     @Override
     public void onSubscribe(Disposable d) {
         mDisposable = d;
         isRunning = true;
+        handler = new android.os.Handler(Looper.getMainLooper());
+
     }
 
     @Override
@@ -40,5 +47,8 @@ public class BaseObserver<ResponseBody> implements Observer<ResponseBody> {
         isRunning = false;
     }
 
+    public void postRunnable(Runnable runnable){
+        handler.post(runnable);
+    }
 
 }

@@ -225,7 +225,7 @@ public class NetBuilder {
         if (!allReady()) {
             return;
         }
-        MultipartBody.Builder builder = new MultipartBody.Builder().setType(MultipartBody.MIXED);
+        MultipartBody.Builder builder = new MultipartBody.Builder().setType(MultipartBody.FORM);
         for(Map.Entry<String,UploadFileBody> entry: fileMap.entrySet()){
             builder.addFormDataPart(entry.getKey(), entry.getValue().getFile().getName(), RequestBody.create(entry.getValue().getMediaType(), entry.getValue().getFile()));
         }

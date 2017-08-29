@@ -15,7 +15,7 @@ public class UploadObserver<UploadRequestBody> extends BaseObserver<ResponseBody
 
     private UploadCallBack callBack;
 
-    public UploadObserver(UploadCallBack uploadCallBack){
+    public UploadObserver(UploadCallBack uploadCallBack) {
         this.callBack = uploadCallBack;
     }
 
@@ -26,21 +26,38 @@ public class UploadObserver<UploadRequestBody> extends BaseObserver<ResponseBody
     }
 
     @Override
-    public void onNext(ResponseBody body) {
-        callBack.onNext(body);
+    public void onNext(final ResponseBody body) {
+        postRunnable(new Runnable() {
+            @Override
+            public void run() {
+                callBack.onNext(body);
+            }
+        });
     }
 
     @Override
-    public void onError(Throwable e) {
-        callBack.onError(e);
+    public void onError(final Throwable e) {
+        postRunnable(new Runnable() {
+            @Override
+            public void run() {
+                callBack.onError(e);
+            }
+        });
     }
 
     @Override
     public void onComplete() {
-        callBack.onComplete();
+        postRunnable(new Runnable() {
+            @Override
+            public void run() {
+                callBack.onComplete();
+            }
+        });
+
     }
+
     @Override
-    public void cancel(){
+    public void cancel() {
         super.cancel();
         callBack.onCancel();
     }
