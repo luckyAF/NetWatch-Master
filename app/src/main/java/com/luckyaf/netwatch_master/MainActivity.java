@@ -202,20 +202,38 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void upload(){
-        try {
+
+            //https://api.iplusmed.com/yjy_doctor/updateDoctorLicenceUrl?globalDeviceRom=5.0.1
+            // &deviceId=5b63ee0d-ecbe-3572-88fb-31177f2bd7b3
+            // &globalDeviceModel=M351
+            // &hasHeadMultiMedia=true
+            // &token=9470bd24-4c98-41fa-bb34-fd88a109c949
+            // &accountId=33343
+            // &globalDeviceType=A
+            // &globalAppVersion=471
+            // &globalAppChannelId=hzyd_ydd_doctor
+            // &globalAppType=0
             //为了方便就不动态申请权限了,直接将文件放到CacheDir()中
-            File file1 = new File(getCacheDir(), "a.java");
-            File file2 = new File(getCacheDir(),"ic_launcher.png");
-            //读取Assets里面的数据,作为上传源数据
-            writeToFile(getAssets().open("a.java"), file1);
-            writeToFile(getAssets().open("ic_launcher.png"), file2);
+            Map<String,Object> params = new HashMap<>();
             Map<String ,UploadFileBody> map = new HashMap<>();
-            map.put("a.java",new UploadFileBody(MediaType.parse("multipart/form-data"),file1));
-            map.put("ic_launcher.png",new UploadFileBody(MediaType.parse("image"),file2));
+            params.put("deviceId","5b63ee0d-ecbe-3572-88fb-31177f2bd7b3");
+            params.put("hasHeadMultiMedia",true);
+            params.put("token","9470bd24-4c98-41fa-bb34-fd88a109c949");
+            params.put("accountId",33343);
+            params.put("globalDeviceType","A");
+            params.put("globalAppVersion",471);
+            params.put("globalAppChannelId","hzyd_ydd_doctor");
+            params.put("globalDeviceRom","5.0.1");
+            params.put("globalDeviceModel","M351");
+            params.put("globalAppType","0");
+            File file1 = new File("/storage/emulated/0/Android/data/cn.medtap.doctor/medtap/Image/1503998760579.JPEG");
+            File file2 = new File("/storage/emulated/0/Android/data/cn.medtap.doctor/medtap/Image/1503998766694.JPEG");
+            map.put("1503998760579.JPEG",new UploadFileBody(MediaType.parse("image/*"),file1));
+            map.put("1503998766694.JPEG",new UploadFileBody(MediaType.parse("image/*"),file2));
 
             NetWatch.getNetBuilder(this)
                     .tag(this)
-                    .upload("http://upload.qiniu.com/", null, map, new UploadCallBack() {
+                    .upload("https://api.iplusmed.com/yjy_doctor/updateDoctorLicenceUrl", params, map, new UploadCallBack() {
                         @Override
                         public void onStart() {
 
@@ -230,6 +248,7 @@ public class MainActivity extends AppCompatActivity {
                         public void onNext(ResponseBody responseBody) {
                             try {
                                 txt_result.setText(responseBody.string());
+                                Logger.d("responseBody",responseBody);
                             }catch (IOException e){
                                 //do nothing
                             }
@@ -258,9 +277,7 @@ public class MainActivity extends AppCompatActivity {
                             Toast.makeText(mContext,"onSuccess",Toast.LENGTH_SHORT).show();
                         }
                     });
-        }catch (IOException e){
-            txt_result.setText(e.getMessage());
-        }
+
     }
 
 

@@ -4,7 +4,7 @@ retrofit2.0 + rxjava2  网络封装框架
 
 ## 导入
 ```
-compile 'com.luckyaf:netwatch:1.1.8'
+compile 'com.luckyaf:netwatch:1.1.9'
 ```
 ## 使用
 --------------------
