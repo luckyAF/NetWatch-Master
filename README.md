@@ -91,3 +91,11 @@ NetWatch.init(this,"http://xxxx.com")//base url
   //将取消所有有该tag的请求 若想取消单个url 可以在tag后加上要取消的url
     NetWatch.cancelRequest(tag)
 ```
+
+### TODO:
+- [ ] 支持https
+- [ ] 支持 cache
+- [ ] 支持临时设置超时等选项
+- [ ] 支持更个性化的调用
+
+
