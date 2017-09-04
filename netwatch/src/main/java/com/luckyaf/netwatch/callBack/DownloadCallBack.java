@@ -11,7 +11,7 @@ public interface DownloadCallBack {
     void onCancel();
     void onComplete();
     void onError(Throwable throwable);
-    void onProgress(String key, int progress, long fileSizeDownloaded, long totalSize);
+    void onProgress(String key, int progress, long speed, long downloadedSize, long totalSize);
     void onSuccess(String key, String path, String name, long fileSize);
 
 }

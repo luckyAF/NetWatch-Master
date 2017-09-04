@@ -11,11 +11,10 @@ import okhttp3.ResponseBody;
 public interface UploadCallBack {
     void onStart();
     void onCancel();
-    void onNext(ResponseBody responseBody);
     void onComplete();
     void onError(Throwable throwable);
     void onProgress(int progress, long speed, long transformed, long total);
-    void onSuccess();
+    void onSuccess(ResponseBody responseBody);
 
 
 }

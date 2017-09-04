@@ -11,11 +11,20 @@ import android.widget.Toast;
 
 import com.luckyaf.netwatch.ContentType;
 import com.luckyaf.netwatch.NetWatch;
+import com.luckyaf.netwatch.callBack.CancelCallBack;
 import com.luckyaf.netwatch.callBack.CommonCallBack;
 import com.luckyaf.netwatch.callBack.DownloadCallBack;
+import com.luckyaf.netwatch.callBack.DownloadSuccessCallback;
+import com.luckyaf.netwatch.callBack.ErrorCallBack;
+import com.luckyaf.netwatch.callBack.ProgressCallBack;
+import com.luckyaf.netwatch.callBack.StartCallBack;
+import com.luckyaf.netwatch.callBack.SuccessCallBack;
 import com.luckyaf.netwatch.callBack.UploadCallBack;
 import com.luckyaf.netwatch.upload.UploadFileBody;
 import com.luckyaf.netwatch.utils.Logger;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -24,7 +33,6 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
-import io.reactivex.internal.schedulers.NewThreadScheduler;
 import okhttp3.MediaType;
 import okhttp3.ResponseBody;
 
@@ -38,11 +46,13 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        txt_result = (TextView)findViewById(R.id.txt_result);
-        mProgressBar = (ProgressBar)findViewById(R.id.progress);
+        txt_result = (TextView) findViewById(R.id.txt_result);
+        mProgressBar = (ProgressBar) findViewById(R.id.progress);
         mProgressDialog = new ProgressDialog(this);
         mContext = this;
-        NetWatch.init(this,"http://api.laifudao.com")//base url
+        NetWatch.init(this, "http://api.laifudao.com")//base url
+                .openOkHttpLog(false)//log  特别多 最好别开
+                .openSimpleLog(true)
                 .build();
 
         findViewById(R.id.btn_get).setOnClickListener(new View.OnClickListener() {
@@ -55,6 +65,12 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 post();
+            }
+        });
+        findViewById(R.id.btn_json_post).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                jsonPost();
             }
         });
         findViewById(R.id.btn_download).setOnClickListener(new View.OnClickListener() {
@@ -70,6 +86,38 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        findViewById(R.id.btn_new_get).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                newGet();
+            }
+        });
+        findViewById(R.id.btn_new_post).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                newPost();
+            }
+        });
+        findViewById(R.id.btn_new_json_post).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                newJsonPost();
+            }
+        });
+        findViewById(R.id.btn_new_download).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                newDownload();
+            }
+        });
+        findViewById(R.id.btn_new_upload).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                newUpload();
+            }
+        });
+
+
         findViewById(R.id.btn_cancel).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -78,14 +126,14 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void get(){
-        Map<String,String> header = new HashMap<>();
+    private void get() {
+        Map<String, Object> header = new HashMap<>();
         header.put("mobileNumber", "18826412577");
         header.put("loginPassword", "123456");
-        Map<String,Object> params = new HashMap<>();
+        Map<String, Object> params = new HashMap<>();
         params.put("start", "0");
         params.put("count", "1");
-        NetWatch.open(this,"http://api.douban.com/v2/movie/top250")
+        NetWatch.open(this, "http://api.douban.com/v2/movie/top250")
                 .headers(header)
                 .tag(this)
                 .get(params, new CommonCallBack() {
@@ -108,21 +156,67 @@ public class MainActivity extends AppCompatActivity {
                     public void onNext(ResponseBody responseBody) {
                         try {
                             txt_result.setText(responseBody.string());
-                        }catch (IOException e){
+                        } catch (IOException e) {
                             //do nothing
                         }
                     }
                 });
     }
 
-    private void post(){
+    private void jsonPost() {
+        Map<String, Object> header = new HashMap<>();
+        header.put("mobileNumber", "18826412577");
+        header.put("loginPassword", "123456");
+        Map<String, Object> params = new HashMap<>();
+        params.put("start", "0");
+        params.put("count", "1");
+        JSONObject object = new JSONObject();
+        try {
+            object.put("start", "0");
+            object.put("count", "1");
+        } catch (JSONException e) {
+            // do nothinf
+        }
+        txt_result.setText(object.toString());
 
-        Map<String,Object> map = new HashMap<>();
-        map.put("questionId",176);
-        map.put("since","FIRST");
-        map.put("accountId",9936);
-        map.put("globalAppType",0);
-        NetWatch.open(this,"http://japi.juhe.cn/joke/content/list.from")
+
+        NetWatch.open(this, "http://api.douban.com/v2/movie/top250")
+                .headers(header)
+                .tag(this)
+                .jsonPost(object.toString(), new CommonCallBack() {
+                    @Override
+                    public void onCancel() {
+
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onNext(ResponseBody responseBody) {
+                        try {
+                            txt_result.setText(responseBody.string());
+                        } catch (IOException e) {
+                            //do nothing
+                        }
+                    }
+                });
+    }
+
+    private void post() {
+        Map<String, Object> map = new HashMap<>();
+        map.put("questionId", 176);
+        map.put("since", "FIRST");
+        map.put("accountId", 9936);
+        map.put("globalAppType", 0);
+        NetWatch.open(this, "http://japi.juhe.cn/joke/content/list.from")
                 .tag(this)
                 .post(map, new CommonCallBack() {
                     @Override
@@ -144,7 +238,7 @@ public class MainActivity extends AppCompatActivity {
                     public void onNext(ResponseBody responseBody) {
                         try {
                             txt_result.setText(responseBody.string());
-                        }catch (IOException e){
+                        } catch (IOException e) {
                             //do nothing
                         }
                     }
@@ -152,116 +246,93 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void download(){
+    private void download() {
         NetWatch.getNetBuilder(this)
                 .tag(this)
-                .download("http://wifiapi02.51y5.net/wifiapi/rd.do?f=wk00003&b=gwanz02&rurl=http%3A%2F%2Fdl.lianwifi.com%2Fdownload%2Fandroid%2FWifiKey-3091-guanwang.apk",
-                        new DownloadCallBack() {
-                            @Override
-                            public void onStart(String key) {
-                                mProgressBar.setProgress(0);
-                                Logger.d("download","onStart");
+                .download("http://wifiapi02.51y5.net/wifiapi/rd.do?f=wk00003&b=gwanz02&rurl=http%3A%2F%2Fdl.lianwifi.com%2Fdownload%2Fandroid%2FWifiKey-3091-guanwang.apk", new DownloadCallBack() {
+                    @Override
+                    public void onStart(String key) {
+                        mProgressBar.setProgress(0);
+                        Logger.d("download", "onStart");
 
-                            }
+                    }
 
-                            @Override
-                            public void onCancel() {
-                                Toast.makeText(mContext,"cancel",Toast.LENGTH_SHORT).show();
-                                Logger.d("download","onCancel");
+                    @Override
+                    public void onCancel() {
+                        Toast.makeText(mContext, "cancel", Toast.LENGTH_SHORT).show();
+                        Logger.d("download", "onCancel");
 
-                            }
+                    }
 
-                            @Override
-                            public void onComplete() {
-                                Logger.d("download","onComplete");
+                    @Override
+                    public void onComplete() {
+                        Logger.d("download", "onComplete");
 
-                            }
+                    }
 
-                            @Override
-                            public void onError(Throwable throwable) {
-                                Logger.d("error",throwable);
-                                Logger.d("download","onError");
+                    @Override
+                    public void onError(Throwable throwable) {
+                        Logger.d("error", throwable);
+                        Logger.d("download", "onError");
 
-                                Toast.makeText(mContext,"error",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(mContext, "error", Toast.LENGTH_SHORT).show();
 
-                            }
+                    }
 
-                            @Override
-                            public void onProgress(String key, int progress, long fileSizeDownloaded, long totalSize) {
-                                mProgressBar.setProgress(progress);
-                                txt_result.setText(fileSizeDownloaded + "/" + totalSize + "" + progress + "");
-                            }
+                    @Override
+                    public void onProgress(String key, int progress, long speed, long downloadedSize, long totalSize) {
+                        mProgressBar.setProgress(progress);
+                        txt_result.setText(downloadedSize + "/" + totalSize + "" + progress + "");
+                    }
 
-                            @Override
-                            public void onSuccess(String key, String path, String name, long fileSize) {
-                                Logger.d("download","onSuccess");
 
-                                Toast.makeText(mContext,"success",Toast.LENGTH_SHORT).show();
-                            }
-                        });
+                    @Override
+                    public void onSuccess(String key, String path, String name, long fileSize) {
+                        Logger.d("download", "onSuccess");
+
+                        Toast.makeText(mContext, "success", Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 
-    private void upload(){
+    private void upload() {
 
-            //https://api.iplusmed.com/yjy_doctor/updateDoctorLicenceUrl?globalDeviceRom=5.0.1
-            // &deviceId=5b63ee0d-ecbe-3572-88fb-31177f2bd7b3
-            // &globalDeviceModel=M351
-            // &hasHeadMultiMedia=true
-            // &token=9470bd24-4c98-41fa-bb34-fd88a109c949
-            // &accountId=33343
-            // &globalDeviceType=A
-            // &globalAppVersion=471
-            // &globalAppChannelId=hzyd_ydd_doctor
-            // &globalAppType=0
+        try {
             //为了方便就不动态申请权限了,直接将文件放到CacheDir()中
-            Map<String,Object> params = new HashMap<>();
-            Map<String ,UploadFileBody> map = new HashMap<>();
-            params.put("deviceId","5b63ee0d-ecbe-3572-88fb-31177f2bd7b3");
-            params.put("hasHeadMultiMedia",true);
-            params.put("token","9470bd24-4c98-41fa-bb34-fd88a109c949");
-            params.put("accountId",33343);
-            params.put("globalDeviceType","A");
-            params.put("globalAppVersion",471);
-            params.put("globalAppChannelId","hzyd_ydd_doctor");
-            params.put("globalDeviceRom","5.0.1");
-            params.put("globalDeviceModel","M351");
-            params.put("globalAppType","0");
-            File file1 = new File("/storage/emulated/0/Android/data/cn.medtap.doctor/medtap/Image/1503998760579.JPEG");
-            File file2 = new File("/storage/emulated/0/Android/data/cn.medtap.doctor/medtap/Image/1503998766694.JPEG");
-            map.put("1503998760579.JPEG",new UploadFileBody(MediaType.parse("image/*"),file1));
-            map.put("1503998766694.JPEG",new UploadFileBody(MediaType.parse("image/*"),file2));
+            File file1 = new File(getCacheDir(), "a.java");
+            File file2 = new File(getCacheDir(), "ic_launcher.png");
+            //读取Assets里面的数据,作为上传源数据
+            writeToFile(getAssets().open("a.java"), file1);
+            writeToFile(getAssets().open("ic_launcher.png"), file2);
+            Map<String, UploadFileBody> map = new HashMap<>();//若要保持顺序  使用LinkedHashMap
+            map.put("a.java", new UploadFileBody(ContentType.JAVA.toMediaType(), file1));
+            map.put("ic_launcher.png", new UploadFileBody(MediaType.parse("image"), file2));
 
             NetWatch.getNetBuilder(this)
                     .tag(this)
-                    .upload("https://api.iplusmed.com/yjy_doctor/updateDoctorLicenceUrl", params, map, new UploadCallBack() {
+                    .upload("http://upload.qiniu.com/", null, map, new UploadCallBack() {
                         @Override
                         public void onStart() {
+                            Toast.makeText(mContext, "onStart", Toast.LENGTH_SHORT).show();
 
                         }
 
                         @Override
                         public void onCancel() {
+                            Toast.makeText(mContext, "onCancel", Toast.LENGTH_SHORT).show();
 
                         }
 
-                        @Override
-                        public void onNext(ResponseBody responseBody) {
-                            try {
-                                txt_result.setText(responseBody.string());
-                                Logger.d("responseBody",responseBody);
-                            }catch (IOException e){
-                                //do nothing
-                            }
-                        }
 
                         @Override
                         public void onComplete() {
-                            Toast.makeText(mContext,"onComplete",Toast.LENGTH_SHORT).show();
+                            Toast.makeText(mContext, "onComplete", Toast.LENGTH_SHORT).show();
 
                         }
 
                         @Override
                         public void onError(Throwable throwable) {
+                            Toast.makeText(mContext, "error " + throwable.toString(), Toast.LENGTH_SHORT).show();
 
                         }
 
@@ -273,14 +344,249 @@ public class MainActivity extends AppCompatActivity {
                         }
 
                         @Override
-                        public void onSuccess(){
-                            Toast.makeText(mContext,"onSuccess",Toast.LENGTH_SHORT).show();
+                        public void onSuccess(ResponseBody responseBody) {
+
                         }
+
                     });
+        } catch (IOException e) {
+            txt_result.setText(e.getMessage());
+        }
 
     }
 
 
+    private void newGet() {
+        Map<String, Object> header = new HashMap<>();
+        header.put("mobileNumber", "18826412577");
+        header.put("loginPassword", "123456");
+        Map<String, Object> params = new HashMap<>();
+        params.put("start", "0");
+        params.put("count", "1");
+        NetWatch.get("http://api.douban.com/v2/movie/top250")
+                .headers(header)
+                .params(params)
+                .tag(this)
+                .onStart(new StartCallBack() {
+                    @Override
+                    public void onStart() {
+
+                    }
+                })
+                .onCancel(new CancelCallBack() {
+                    @Override
+                    public void onCancel() {
+
+                    }
+                })
+                .onError(new ErrorCallBack() {
+                    @Override
+                    public void onError(Throwable error) {
+
+                    }
+                })
+                .onSuccess(new SuccessCallBack() {
+                    @Override
+                    public void onSuccess(ResponseBody responseBody) {
+                        try {
+                            txt_result.setText(responseBody.string());
+                        } catch (IOException e) {
+                            //do nothing
+                        }
+                    }
+                })
+                .run();
+    }
+
+    private void newJsonPost() {
+        Map<String, Object> header = new HashMap<>();
+        header.put("mobileNumber", "18826412577");
+        header.put("loginPassword", "123456");
+        Map<String, Object> params = new HashMap<>();
+        params.put("start", "0");
+        params.put("count", "1");
+        JSONObject object = new JSONObject();
+        try {
+            object.put("start", "0");
+            object.put("count", "1");
+        } catch (JSONException e) {
+            // do nothinf
+        }
+        txt_result.setText(object.toString());
+        NetWatch.post("http://japi.juhe.cn/joke/content/list.from")
+                .headers(header)
+                .jsonString(object.toString())
+                .tag(this)
+                .onStart(new StartCallBack() {
+                    @Override
+                    public void onStart() {
+
+                    }
+                })
+                .onCancel(new CancelCallBack() {
+                    @Override
+                    public void onCancel() {
+
+                    }
+                })
+                .onError(new ErrorCallBack() {
+                    @Override
+                    public void onError(Throwable error) {
+
+                    }
+                })
+                .onSuccess(new SuccessCallBack() {
+                    @Override
+                    public void onSuccess(ResponseBody responseBody) {
+                        try {
+                            txt_result.setText(responseBody.string());
+                        } catch (IOException e) {
+                            //do nothing
+                        }
+                    }
+                })
+                .run();
+    }
+
+    private void newPost() {
+        Map<String, Object> map = new HashMap<>();
+        map.put("questionId", 176);
+        map.put("since", "FIRST");
+        map.put("accountId", 9936);
+        map.put("globalAppType", 0);
+        NetWatch.get("http://japi.juhe.cn/joke/content/list.from")
+                .params(map)
+                .tag(this)
+                .onStart(new StartCallBack() {
+                    @Override
+                    public void onStart() {
+
+                    }
+                })
+                .onCancel(new CancelCallBack() {
+                    @Override
+                    public void onCancel() {
+
+                    }
+                })
+                .onError(new ErrorCallBack() {
+                    @Override
+                    public void onError(Throwable error) {
+
+                    }
+                })
+                .onSuccess(new SuccessCallBack() {
+                    @Override
+                    public void onSuccess(ResponseBody responseBody) {
+                        try {
+                            txt_result.setText(responseBody.string());
+                        } catch (IOException e) {
+                            //do nothing
+                        }
+                    }
+                })
+                .run();
+    }
+
+    private void newDownload() {
+        NetWatch.download("http://wifiapi02.51y5.net/wifiapi/rd.do?f=wk00003&b=gwanz02&rurl=http%3A%2F%2Fdl.lianwifi.com%2Fdownload%2Fandroid%2FWifiKey-3091-guanwang.apk")
+                .tag(this)
+                .onStart(new StartCallBack() {
+                    @Override
+                    public void onStart() {
+                        mProgressBar.setProgress(0);
+                    }
+                })
+                .onCancel(new CancelCallBack() {
+                    @Override
+                    public void onCancel() {
+
+                    }
+                })
+                .onError(new ErrorCallBack() {
+                    @Override
+                    public void onError(Throwable error) {
+
+                    }
+                })
+                .onProgress(new ProgressCallBack() {
+                    @Override
+                    public void onProgress(int progress, long speed, long downloadedSize, long totalSize) {
+                        mProgressBar.setProgress(progress);
+                        txt_result.setText(downloadedSize + "/" + totalSize + "" + progress + "");
+
+                    }
+                })
+                .onSuccess(new DownloadSuccessCallback() {
+
+                    @Override
+                    public void onSuccess(String key, String path, String name, long fileSize) {
+                        Logger.d("download", "onSuccess");
+                        Toast.makeText(mContext, "success", Toast.LENGTH_SHORT).show();
+
+
+                    }
+                })
+                .run();
+    }
+
+    private void newUpload() {
+        try {
+            //为了方便就不动态申请权限了,直接将文件放到CacheDir()中
+            File file1 = new File(getCacheDir(), "a.java");
+            File file2 = new File(getCacheDir(), "ic_launcher.png");
+            //读取Assets里面的数据,作为上传源数据
+            writeToFile(getAssets().open("a.java"), file1);
+            writeToFile(getAssets().open("ic_launcher.png"), file2);
+            Map<String, UploadFileBody> map = new HashMap<>();//若要保持顺序  使用LinkedHashMap
+            map.put("a.java", new UploadFileBody(ContentType.JAVA.toMediaType(), file1));
+            map.put("ic_launcher.png", new UploadFileBody(MediaType.parse("image"), file2));
+
+            NetWatch.upload("http://upload.qiniu.com/")
+                    .tag(this)
+                    .files(map)
+                    .onStart(new StartCallBack() {
+                        @Override
+                        public void onStart() {
+                            mProgressBar.setProgress(0);
+
+                        }
+                    })
+                    .onCancel(new CancelCallBack() {
+                        @Override
+                        public void onCancel() {
+                            Toast.makeText(mContext, "onCancel", Toast.LENGTH_SHORT).show();
+
+                        }
+                    })
+                    .onError(new ErrorCallBack() {
+                        @Override
+                        public void onError(Throwable error) {
+                            Toast.makeText(mContext, "error " + error.toString(), Toast.LENGTH_SHORT).show();
+
+                        }
+                    })
+                    .onProgress(new ProgressCallBack() {
+                        @Override
+                        public void onProgress(int progress, long speed, long downloadedSize, long totalSize) {
+                            mProgressBar.setProgress(progress);
+                            txt_result.setText(downloadedSize + "/" + totalSize + "" + progress + "");
+
+                        }
+                    })
+                    .onSuccess(new SuccessCallBack() {
+                        @Override
+                        public void onSuccess(ResponseBody responseBody) {
+                            Toast.makeText(mContext, "success", Toast.LENGTH_SHORT).show();
+
+                        }
+                    })
+                    .run();
+
+        } catch (IOException e) {
+            txt_result.setText(e.getMessage());
+        }
+    }
 
     public static File writeToFile(InputStream in, File file) throws IOException {
         FileOutputStream out = new FileOutputStream(file);
@@ -292,7 +598,6 @@ public class MainActivity extends AppCompatActivity {
         out.close();
         return file;
     }
-
 
 
 }

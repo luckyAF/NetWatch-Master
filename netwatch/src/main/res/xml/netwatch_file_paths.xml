@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <files-path name="net_watch_file" path="net_watch_file/" />
+    <!--对应 Context.getFilesDir() 的路径地址-->
+    <cache-path name="net_watch_cache" path="net_watch_cache/" />
+    <!--对应  getCacheDir()的路径地址-->
+    <external-path name="net_watch_ext" path="net_watch_ext/"/>
+    <!--对应 Environment.getExternalStorageDirectory()的路径地址-->
+    <root-path name="net_watch" path="" />
+    <!-- 对应Context#getExternalFilesDir(String) Context.getExternalFilesDir(null) 返回的路径地址-->
+</resources>

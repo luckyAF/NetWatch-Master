@@ -2,7 +2,13 @@ package com.luckyaf.netwatch.observer;
 
 import android.content.Context;
 
+import com.luckyaf.netwatch.callBack.CancelCallBack;
 import com.luckyaf.netwatch.callBack.DownloadCallBack;
+import com.luckyaf.netwatch.callBack.DownloadSuccessCallback;
+import com.luckyaf.netwatch.callBack.ErrorCallBack;
+import com.luckyaf.netwatch.callBack.ProgressCallBack;
+import com.luckyaf.netwatch.callBack.StartCallBack;
+import com.luckyaf.netwatch.callBack.SuccessCallBack;
 import com.luckyaf.netwatch.download.DownloadManager;
 import com.luckyaf.netwatch.utils.Logger;
 
@@ -18,6 +24,11 @@ import static com.luckyaf.netwatch.download.DownloadManager.TAG;
 public class DownloadObserver<ResponseBody extends okhttp3.ResponseBody> extends BaseObserver<ResponseBody> {
 
     private DownloadCallBack callBack;
+    private StartCallBack mStartCallBack;
+    private CancelCallBack mCancelCallBack;
+    private DownloadSuccessCallback mSuccessCallBack;
+    private ErrorCallBack mErrorCallBack;
+    private ProgressCallBack mProgressCallBack;
     private Context context;
     private String path;
     private String name;
@@ -31,24 +42,63 @@ public class DownloadObserver<ResponseBody extends okhttp3.ResponseBody> extends
      * @param key   key
      * @param path    保存路径
      * @param name    保存文件名
-     * @param callBack   下载回调
      * @param context   上下文
      */
-    public DownloadObserver(String key, String path, String name, DownloadCallBack callBack, Context context) {
+    public DownloadObserver(String key, String path, String name,Context context) {
         this.key = key;
         this.path = path;
         this.name = name;
-        this.callBack = callBack;
         this.context = context;
         this.isCancel = false;
     }
+
+    public DownloadObserver downloadCallBack(DownloadCallBack callBack){
+        this.callBack = callBack;
+        return this;
+    }
+
+    public DownloadObserver startCallBack(StartCallBack startCallBack){
+        this.mStartCallBack = startCallBack;
+        return this;
+    }
+
+    public DownloadObserver cancelCallBack(CancelCallBack cancelCallBack){
+        this.mCancelCallBack = cancelCallBack;
+        return this;
+    }
+
+    public DownloadObserver successCallBack(DownloadSuccessCallback successCallBack){
+        this.mSuccessCallBack = successCallBack;
+        return this;
+    }
+
+    public DownloadObserver progressCallBack(ProgressCallBack progressCallBack){
+        this.mProgressCallBack= progressCallBack;
+        return this;
+    }
+
+    public DownloadObserver errorCallBack(ErrorCallBack errorCallBack){
+        this.mErrorCallBack = errorCallBack;
+        return this;
+    }
+
 
 
     @Override
     public void onSubscribe(Disposable d) {
         super.onSubscribe(d);
-        callBack.onStart(key);
-        mDownloadManager = new DownloadManager(callBack);
+        if(callBack != null) {
+            callBack.onStart(key);
+        }
+        if(mStartCallBack != null){
+            mStartCallBack.onStart();
+        }
+        mDownloadManager = new DownloadManager()
+        .downloadCallBack(callBack)
+        .successCallBack(mSuccessCallBack)
+        .errorCallBack(mErrorCallBack)
+        .progressCallBack(mProgressCallBack);
+
 
     }
 
@@ -61,11 +111,19 @@ public class DownloadObserver<ResponseBody extends okhttp3.ResponseBody> extends
 
     @Override
     public void onError(final Throwable e) {
+        if(callBack == null && mErrorCallBack == null){
+            return;
+        }
         if(!this.isCancel){
             postRunnable(new Runnable() {
                 @Override
                 public void run() {
-                    callBack.onError(e);
+                    if(callBack!= null) {
+                        callBack.onError(e);
+                    }
+                    if(mErrorCallBack!= null){
+                        mErrorCallBack.onError(e);
+                    }
                 }
             });
         }
@@ -73,14 +131,21 @@ public class DownloadObserver<ResponseBody extends okhttp3.ResponseBody> extends
 
     @Override
     public void onComplete() {
-        callBack.onComplete();
+        if(callBack != null) {
+            callBack.onComplete();
+        }
     }
 
     @Override
     public void cancel(){
         mDownloadManager.setCancel(true);
         super.cancel();
-        callBack.onCancel();
+        if(mCancelCallBack!= null) {
+            mCancelCallBack.onCancel();
+        }
+        if(callBack!= null) {
+            callBack.onCancel();
+        }
         this.isCancel = true;
     }
 

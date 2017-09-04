@@ -41,7 +41,6 @@ import java.util.regex.Pattern;
  * * https://github.com/iPaulPro/aFileChooser/blob/master/aFileChooser/src/com/ipaulpro/afilechooser/utils/FileUtils.java
  */
 
-@SuppressWarnings("unused")
 public class FileUtil {
     /** TAG for log messages. */
     static final String TAG = "FileUtils";
@@ -689,7 +688,7 @@ public class FileUtil {
         Matcher mc = pattern.matcher(decodedUrl);//条件匹配
         while(mc.find()){
             name = mc.group();//截取文件名后缀名
-            Logger.e("substring:", name);
+            Logger.i("substring:", name);
         }
         if(TextUtils.isEmpty(name)){
             name = UUID.randomUUID().toString();

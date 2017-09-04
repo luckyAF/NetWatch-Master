@@ -8,29 +8,89 @@
     tools:context="com.luckyaf.netwatch_master.MainActivity">
 
 
-    <Button
-        android:id="@+id/btn_get"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="get"/>
 
-    <Button
-        android:id="@+id/btn_post"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="post"/>
+    <LinearLayout android:layout_width="match_parent"
+                  android:layout_height="wrap_content"
+                  android:orientation="horizontal">
+        <Button
+            android:id="@+id/btn_get"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="get"/>
 
-    <Button
-        android:id="@+id/btn_download"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="download"/>
 
-    <Button
-        android:id="@+id/btn_upload"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="upload"/>
+        <Button
+            android:id="@+id/btn_post"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="post"/>
+
+        <Button
+            android:id="@+id/btn_json_post"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="json post"/>
+
+        <Button
+            android:id="@+id/btn_download"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="download"/>
+
+        <Button
+            android:id="@+id/btn_upload"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="upload"/>
+
+    </LinearLayout>
+
+    <LinearLayout android:layout_width="match_parent"
+                  android:layout_height="wrap_content"
+                  android:orientation="horizontal">
+        <Button
+            android:id="@+id/btn_new_get"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="new get"/>
+
+
+        <Button
+            android:id="@+id/btn_new_post"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="new post"/>
+
+        <Button
+            android:id="@+id/btn_new_json_post"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="new json post"/>
+
+        <Button
+            android:id="@+id/btn_new_download"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="new download"/>
+
+        <Button
+            android:id="@+id/btn_new_upload"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="new upload"/>
+
+    </LinearLayout>
+
 
     <Button
         android:id="@+id/btn_cancel"
@@ -49,6 +109,7 @@
     <TextView
         android:id="@+id/txt_result"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"
+        android:scrollbars="vertical"/>
 
 </LinearLayout>

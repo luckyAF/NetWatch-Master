@@ -1,5 +1,6 @@
 package com.luckyaf.netwatch;
 
+import okhttp3.MediaType;
 
 /**
  * 类描述：
@@ -12,37 +13,53 @@ public enum ContentType {
     /**
      * application/json
      */
-    JSON,
+    JSON("application/json; charset=utf-8"),
     /**
      *text
      */
-    TEXT,
+    TEXT("text/plain"),
     /**
      *AUDIO
      */
-    AUDIO,
+    AUDIO("audio/*"),
     /**
      *
      */
-    VIDEO,
+    VIDEO("video/*"),
     /**
      *image
      */
-    IMAGE,
+    IMAGE("image/*; charset=utf-8"),
     /**
      *java
      */
-    JAVA,
+    JAVA("java/*"),
     /**
      *msg
      */
-    MESSAGE,
+    MESSAGE("message/rfc822"),
     /**
      *application/vnd.android.package-archive
      */
-    APK,
+    APK("application/vnd.android.package-archive"),
     /**
      *multipart/form-data
      */
-    FORM
+    FORM("multipart/form-data;");
+
+    private String _type;
+    ContentType(String type){
+        _type = type;
+    }
+
+
+    @Override
+    public String toString() {
+        return _type;
+    }
+
+    public MediaType toMediaType(){
+        return MediaType.parse(_type);
+    }
+
 }
