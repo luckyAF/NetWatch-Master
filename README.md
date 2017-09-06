@@ -10,7 +10,14 @@ compile 'com.luckyaf:netwatch:1.1.9'
 --------------------
 ### 初始化
 ```
-NetWatch.init(this,"http://xxxx.com")//base url
+NetWatch.init(this,"http://xxxx.com")//base url        。addCommonHeaders(commonHeaders)
+        .addCommonHeaders(commonHeaders)
+        .addCommonParams(commonParams)
+        .openOkHttpLog(HttpLoggingInterceptor.Level.NONE)//log  特别多 最好别开
+        .openSimpleLog(true)
+        //.andSSL() 证书
+        .retryOnConnectionFailure(true)//失败重连
+        .build();        
         .build();
           
 ```
@@ -93,9 +100,10 @@ NetWatch.init(this,"http://xxxx.com")//base url
 ```
 
 ### TODO:
-- [ ] 支持https
+- [X] 支持https
 - [ ] 支持 cache
 - [ ] 支持临时设置超时等选项
 - [ ] 支持更个性化的调用
+- [ ] 文件断点下载
 
 

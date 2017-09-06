@@ -7,6 +7,8 @@ import android.support.annotation.NonNull;
 import com.luckyaf.netwatch.callBack.ErrorCallBack;
 import com.luckyaf.netwatch.callBack.ProgressCallBack;
 import com.luckyaf.netwatch.callBack.UploadCallBack;
+import com.luckyaf.netwatch.exception.NetException;
+import com.luckyaf.netwatch.utils.Logger;
 
 import java.io.IOException;
 
@@ -37,6 +39,8 @@ public class UploadRequestBody extends RequestBody {
 
     public UploadRequestBody(RequestBody requestBody) {
         this.requestBody = requestBody;
+        Logger.d("requestBody contentType");
+        Logger.d("requestBody contentType",requestBody.contentType());
         isCancel = false;
         this.handler = new Handler(Looper.getMainLooper());
     }
@@ -75,7 +79,10 @@ public class UploadRequestBody extends RequestBody {
             return -1;
         }
         try {
+            Logger.d("requestBody contentType",requestBody.contentType());
+            Logger.d("requestBody contentLength",requestBody.contentLength());
             return requestBody.contentLength();
+
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -94,7 +101,7 @@ public class UploadRequestBody extends RequestBody {
             requestBody.writeTo(bufferedSink);
             bufferedSink.flush();
         } catch (final IOException e) {
-            onError(e);
+            onError(NetException.handleException(e));
         } finally {
             onComplete();
 
@@ -110,10 +117,10 @@ public class UploadRequestBody extends RequestBody {
             @Override
             public void run() {
                 if (callback != null) {
-                    callback.onError(e);
+                    callback.onError(NetException.handleException(e));
                 }
                 if (mErrorCallBack != null) {
-                    mErrorCallBack.onError(e);
+                    mErrorCallBack.onError(NetException.handleException(e));
                 }
             }
         });
@@ -133,7 +140,7 @@ public class UploadRequestBody extends RequestBody {
     }
 
 
-    private void onProgress(final int progress, final long speed, final long downloadedSize, final long totalSize) {
+    private void onProgress(final int progress, final long speed, final long uploadedSize, final long totalSize) {
         if(callback == null && mProgressCallBack == null){
             return;
         }
@@ -141,10 +148,10 @@ public class UploadRequestBody extends RequestBody {
             @Override
             public void run() {
                 if (callback != null) {
-                    callback.onProgress(progress, speed, downloadedSize, totalSize);
+                    callback.onProgress(progress, speed, uploadedSize, totalSize);
                 }
                 if (mProgressCallBack != null) {
-                    mProgressCallBack.onProgress(progress, speed, downloadedSize, totalSize);
+                    mProgressCallBack.onProgress(progress, speed, uploadedSize, totalSize);
                 }
             }
         });
@@ -165,7 +172,7 @@ public class UploadRequestBody extends RequestBody {
                 super.write(source, byteCount);
             } catch (IOException e) {
                 e.printStackTrace();
-                onError(e);
+                onError(NetException.handleException(e));
                 throw e;
             }
             if (contentLength == 0) {

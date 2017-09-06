@@ -8,5 +8,5 @@ import java.util.Map;
  * @author Created by luckyAF on 2017/8/14
  */
 public interface ParamsInterceptor {
-    Map checkParams(Map params);
+    Map<String, Object> checkParams(Map<String, Object> params);
 }

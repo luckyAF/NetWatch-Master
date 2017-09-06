@@ -10,16 +10,24 @@ import com.luckyaf.netwatch.netbuilder.NetGetBuilder;
 import com.luckyaf.netwatch.netbuilder.NetPostBuilder;
 import com.luckyaf.netwatch.netbuilder.NetUploadBuilder;
 import com.luckyaf.netwatch.observer.BaseObserver;
+import com.luckyaf.netwatch.utils.HttpsFactory;
 import com.luckyaf.netwatch.utils.Logger;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import javax.net.ssl.SSLSocketFactory;
+
 import okhttp3.Cache;
+import okhttp3.HttpUrl;
+import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.CallAdapter;
 import retrofit2.Converter;
@@ -35,12 +43,13 @@ import retrofit2.converter.scalars.ScalarsConverterFactory;
 @SuppressWarnings("unused")
 public class NetWatch {
     private static String TAG = NetWatch.class.getName();
-    private static volatile NetWatch mInstance;
+
+    private static  NetWatch mInstance;
     private static volatile RetrofitHttpService mService;
-    private static  Context applicationContext;
+    private static Context applicationContext;
 
 
-    private NetWatch(Context context,RetrofitHttpService service) {
+    private NetWatch(Context context, RetrofitHttpService service) {
         mService = service;
         applicationContext = context;
     }
@@ -65,7 +74,7 @@ public class NetWatch {
         return new Logger.Builder(context);
     }
 
-    public static Context getApplicationContext(){
+    public static Context getApplicationContext() {
         return applicationContext;
     }
 
@@ -135,17 +144,14 @@ public class NetWatch {
 
         public SingletonBuilder openSimpleLog(Boolean open) {
             this.loggerBuilder.setLogSwitch(open)
-            .setConsoleSwitch(open);
+                    .setConsoleSwitch(open);
 
             return this;
         }
 
-        public SingletonBuilder openOkHttpLog(Boolean open) {
-            if (!open) {
-                return this;
-            }
+        public SingletonBuilder openOkHttpLog(HttpLoggingInterceptor.Level level) {
             HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
-            logging.setLevel(HttpLoggingInterceptor.Level.BODY);
+            logging.setLevel(level);
             this.clientBuilder.addInterceptor(logging);
             return this;
         }
@@ -168,6 +174,50 @@ public class NetWatch {
             return this;
         }
 
+        /**
+         * 全局head
+         *
+         * @param map head map
+         */
+        public SingletonBuilder addCommonHeaders(final Map<String, Object> map) {
+            this.clientBuilder.addInterceptor(new Interceptor() {
+                @Override
+                public Response intercept(Chain chain) throws IOException {
+                    Request originalRequest = chain.request();
+                    Request.Builder builder = originalRequest.newBuilder();
+                    for (Map.Entry<String, Object> entry : map.entrySet()) {
+                        builder.header(entry.getKey(), entry.getValue().toString());
+                    }
+                    Request.Builder requestBuilder = builder.method(originalRequest.method(), originalRequest.body());
+                    Request request = requestBuilder.build();
+                    return chain.proceed(request);
+                }
+            });
+            return this;
+        }
+
+        /**
+         * 全局参数
+         *
+         * @param map 参数map
+         */
+        public SingletonBuilder addCommonParams(final Map<String, Object> map) {
+            this.clientBuilder.addInterceptor(new Interceptor() {
+                @Override
+                public Response intercept(Chain chain) throws IOException {
+                    Request originRequest = chain.request();
+                    Request request;
+                    HttpUrl.Builder builder = originRequest.url().newBuilder();
+                    for (Map.Entry<String, Object> entry : map.entrySet()) {
+                        builder.addQueryParameter(entry.getKey(), entry.getValue().toString());
+                    }
+                    request = originRequest.newBuilder().url(builder.build()).build();
+                    return chain.proceed(request);
+                }
+            });
+            return this;
+        }
+
         public SingletonBuilder readTimeout(long time, TimeUnit unit) {
             this.clientBuilder.readTimeout(time, unit);
             return this;
@@ -180,6 +230,28 @@ public class NetWatch {
 
         public SingletonBuilder cache(Cache cache) {
             this.clientBuilder.cache(cache);
+            return this;
+        }
+
+
+        /**
+         * 添加证书
+         *
+         * @param hosts        host
+         * @param certificates 证书
+         */
+        public SingletonBuilder andSSL(String[] hosts, int[] certificates) {
+            if (hosts == null) {
+                throw new NullPointerException("hosts == null");
+            }
+            if (certificates == null) {
+                throw new NullPointerException("ids == null");
+            }
+            SSLSocketFactory factory = HttpsFactory.getSSLSocketFactory(applicationContext,certificates);
+            if(null != factory) {
+                this.clientBuilder.sslSocketFactory(factory, HttpsFactory.getTrustManager());
+            }
+            this.clientBuilder.hostnameVerifier(HttpsFactory.getHostnameVerifier(hosts));
             return this;
         }
 
@@ -218,7 +290,7 @@ public class NetWatch {
             RetrofitHttpService retrofitHttpService =
                     retrofit.create(RetrofitHttpService.class);
 
-            mInstance = new NetWatch(applicationContext,retrofitHttpService);
+            mInstance = new NetWatch(applicationContext, retrofitHttpService);
         }
     }
 

@@ -9,5 +9,5 @@ import java.util.Map;
  */
 
 public interface HeadersInterceptor {
-    Map checkHeaders(Map headers);
+    Map<String, Object> checkHeaders(Map<String, Object> headers);
 }

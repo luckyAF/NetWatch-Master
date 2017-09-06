@@ -2,7 +2,9 @@ package com.luckyaf.netwatch.netbuilder;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.text.TextUtils;
 
+import com.luckyaf.netwatch.ContentType;
 import com.luckyaf.netwatch.NetWatch;
 import com.luckyaf.netwatch.callBack.CancelCallBack;
 import com.luckyaf.netwatch.callBack.ErrorCallBack;
@@ -37,6 +39,10 @@ public class NetUploadBuilder extends NetBaseBuilder{
     private ProgressCallBack mProgressCallBack;
     private ErrorCallBack mErrorCallBack;
     private Map<String,UploadFileBody> mFileBodyMap = new HashMap<>();
+    private String jsonString;
+    private String jsonKey;
+    private String jsonName;
+    private Boolean usingJson = false;
 
     public NetUploadBuilder(@NonNull String url) {
         if (NetWatch.getInstance() == null) {
@@ -75,6 +81,15 @@ public class NetUploadBuilder extends NetBaseBuilder{
         if (!allReady()) {
             return;
         }
+        if(usingJson){
+            jsonRun();
+        }else{
+            commonRun();
+        }
+
+    }
+
+    private void commonRun(){
         MultipartBody.Builder builder = new MultipartBody.Builder().setType(MultipartBody.FORM);
         for (Map.Entry<String, UploadFileBody> entry : this.mFileBodyMap.entrySet()) {
             builder.addFormDataPart(entry.getKey(), entry.getValue().getFileName(), RequestBody.create(entry.getValue().getMediaType(), entry.getValue().getFile()));
@@ -95,6 +110,34 @@ public class NetUploadBuilder extends NetBaseBuilder{
         NetWatch.putRequest(tag, this.url, observer);
 
         NetWatch.getService().upload(checkUrl(this.url), checkHeaders(headers), checkParams(this.params), uploadRequestBody)
+                .subscribeOn(Schedulers.io())
+                .unsubscribeOn(Schedulers.io())
+                .observeOn(Schedulers.io())
+                .subscribe(observer);
+    }
+
+    private void jsonRun(){
+        MultipartBody.Builder builder = new MultipartBody.Builder().setType(MultipartBody.FORM);
+        RequestBody params = RequestBody.create(ContentType.JSON.toMediaType(),
+                jsonString);
+        if(TextUtils.isEmpty(jsonKey)){
+            builder.addPart(params);
+        }else {
+            builder.addFormDataPart(jsonKey, jsonName, params);
+        }
+        for(Map.Entry<String,UploadFileBody> entry: this.mFileBodyMap.entrySet()){
+            builder.addFormDataPart(entry.getKey(), entry.getValue().getFileName(), RequestBody.create(entry.getValue().getMediaType(), entry.getValue().getFile()));
+        }
+        UploadRequestBody uploadRequestBody = new UploadRequestBody(builder.build())
+                .progressCallBack(this.mProgressCallBack)
+                .errorCallBack(this.mErrorCallBack);
+        UploadObserver observer = new UploadObserver<>(uploadRequestBody)
+                .startCallBack(mStartCallBack)
+                .cancelCallBack(mCancelCallBack)
+                .successCallBack(mSuccessCallBack)
+                .errorCallBack(mErrorCallBack);
+        NetWatch.putRequest(tag, this.url, observer);
+        NetWatch.getService().upload(checkUrl(this.url), checkHeaders(headers), uploadRequestBody)
                 .subscribeOn(Schedulers.io())
                 .unsubscribeOn(Schedulers.io())
                 .observeOn(Schedulers.io())
@@ -139,6 +182,14 @@ public class NetUploadBuilder extends NetBaseBuilder{
     }
     public NetUploadBuilder param(@NonNull String key, Object value) {
         this.params.put(key, value);
+        return this;
+    }
+
+    public NetUploadBuilder jsonString(String key,String name,@NonNull String string){
+        this.jsonKey = key;
+        this.jsonName = name;
+        this.jsonString = string;
+        this.usingJson = true;
         return this;
     }
 

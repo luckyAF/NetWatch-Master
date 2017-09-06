@@ -5,6 +5,7 @@ import com.luckyaf.netwatch.callBack.ErrorCallBack;
 import com.luckyaf.netwatch.callBack.StartCallBack;
 import com.luckyaf.netwatch.callBack.SuccessCallBack;
 import com.luckyaf.netwatch.callBack.UploadCallBack;
+import com.luckyaf.netwatch.exception.NetException;
 import com.luckyaf.netwatch.upload.UploadFileBody;
 import com.luckyaf.netwatch.upload.UploadRequestBody;
 
@@ -94,10 +95,10 @@ public class UploadObserver<UploadRequestBody> extends BaseObserver<ResponseBody
             @Override
             public void run() {
                 if(callBack != null) {
-                    callBack.onError(e);
+                    callBack.onError(NetException.handleException(e));
                 }
                 if(mErrorCallBack != null){
-                    mErrorCallBack.onError(e);
+                    mErrorCallBack.onError(NetException.handleException(e));
                 }
             }
         });

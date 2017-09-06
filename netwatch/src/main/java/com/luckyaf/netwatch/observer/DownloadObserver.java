@@ -10,6 +10,7 @@ import com.luckyaf.netwatch.callBack.ProgressCallBack;
 import com.luckyaf.netwatch.callBack.StartCallBack;
 import com.luckyaf.netwatch.callBack.SuccessCallBack;
 import com.luckyaf.netwatch.download.DownloadManager;
+import com.luckyaf.netwatch.exception.NetException;
 import com.luckyaf.netwatch.utils.Logger;
 
 import io.reactivex.disposables.Disposable;
@@ -119,10 +120,10 @@ public class DownloadObserver<ResponseBody extends okhttp3.ResponseBody> extends
                 @Override
                 public void run() {
                     if(callBack!= null) {
-                        callBack.onError(e);
+                        callBack.onError(NetException.handleException(e));
                     }
                     if(mErrorCallBack!= null){
-                        mErrorCallBack.onError(e);
+                        mErrorCallBack.onError(NetException.handleException(e));
                     }
                 }
             });

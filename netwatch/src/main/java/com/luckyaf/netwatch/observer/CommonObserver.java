@@ -5,6 +5,7 @@ import com.luckyaf.netwatch.callBack.CommonCallBack;
 import com.luckyaf.netwatch.callBack.ErrorCallBack;
 import com.luckyaf.netwatch.callBack.StartCallBack;
 import com.luckyaf.netwatch.callBack.SuccessCallBack;
+import com.luckyaf.netwatch.exception.NetException;
 
 import io.reactivex.disposables.Disposable;
 
@@ -84,10 +85,10 @@ public class CommonObserver<ResponseBody extends okhttp3.ResponseBody> extends B
                 @Override
                 public void run() {
                     if(callBack != null){
-                        callBack.onError(e);
+                        callBack.onError(NetException.handleException(e));
                     }
                     if(mErrorCallBack != null) {
-                        mErrorCallBack.onError(e);
+                        mErrorCallBack.onError(NetException.handleException(e));
                     }
                 }
             });

@@ -21,6 +21,7 @@ import retrofit2.HttpException;
  * @author Created by luckyAF on 2017/8/17
  */
 public class NetException {
+    private static final int BAD_REQUEST = 400;
     private static final int UNAUTHORIZED = 401;
     private static final int FORBIDDEN = 403;
     private static final int NOT_FOUND = 404;
@@ -45,6 +46,9 @@ public class NetException {
             HttpException httpException = (HttpException) e;
             ex = new NetWatchThrowable(e, httpException.code());
             switch (ex.getCode()) {
+                case BAD_REQUEST:
+                    ex.setMessage("请求无效");
+                    break;
                 case UNAUTHORIZED:
                     ex.setMessage("未授权的请求");
                     break;

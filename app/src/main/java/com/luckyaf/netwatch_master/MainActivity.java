@@ -35,6 +35,7 @@ import java.util.Map;
 
 import okhttp3.MediaType;
 import okhttp3.ResponseBody;
+import okhttp3.logging.HttpLoggingInterceptor;
 
 public class MainActivity extends AppCompatActivity {
     private TextView txt_result;
@@ -50,9 +51,15 @@ public class MainActivity extends AppCompatActivity {
         mProgressBar = (ProgressBar) findViewById(R.id.progress);
         mProgressDialog = new ProgressDialog(this);
         mContext = this;
+        Map<String,Object> commonHeaders= new HashMap<>();
+        Map<String,Object> commonParams= new HashMap<>();
         NetWatch.init(this, "http://api.laifudao.com")//base url
-                .openOkHttpLog(false)//log  特别多 最好别开
+                .addCommonHeaders(commonHeaders)
+                .addCommonParams(commonParams)
+                .openOkHttpLog(HttpLoggingInterceptor.Level.NONE)//log  特别多 最好别开
                 .openSimpleLog(true)
+                //.andSSL() 证书
+                .retryOnConnectionFailure(true)//失败重连
                 .build();
 
         findViewById(R.id.btn_get).setOnClickListener(new View.OnClickListener() {
@@ -282,7 +289,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onProgress(String key, int progress, long speed, long downloadedSize, long totalSize) {
                         mProgressBar.setProgress(progress);
-                        txt_result.setText(downloadedSize + "/" + totalSize + "" + progress + "");
+                        txt_result.setText(downloadedSize + "/" + totalSize + "    " + progress + "%");
                     }
 
 
@@ -290,7 +297,7 @@ public class MainActivity extends AppCompatActivity {
                     public void onSuccess(String key, String path, String name, long fileSize) {
                         Logger.d("download", "onSuccess");
 
-                        Toast.makeText(mContext, "success", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(mContext, name+" download success", Toast.LENGTH_SHORT).show();
                     }
                 });
     }
@@ -339,7 +346,7 @@ public class MainActivity extends AppCompatActivity {
                         @Override
                         public void onProgress(int progress, long speed, long transformed, long total) {
                             mProgressBar.setProgress(progress);
-                            txt_result.setText(transformed + "/" + total + "" + progress + "");
+                            txt_result.setText(transformed + "/" + total + "     " + progress + "%");
 
                         }
 
@@ -513,7 +520,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onProgress(int progress, long speed, long downloadedSize, long totalSize) {
                         mProgressBar.setProgress(progress);
-                        txt_result.setText(downloadedSize + "/" + totalSize + "" + progress + "");
+                        txt_result.setText(downloadedSize + "/" + totalSize + "    " + progress + "%");
 
                     }
                 })
@@ -522,7 +529,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onSuccess(String key, String path, String name, long fileSize) {
                         Logger.d("download", "onSuccess");
-                        Toast.makeText(mContext, "success", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(mContext, name + " download success", Toast.LENGTH_SHORT).show();
 
 
                     }
@@ -540,7 +547,8 @@ public class MainActivity extends AppCompatActivity {
             writeToFile(getAssets().open("ic_launcher.png"), file2);
             Map<String, UploadFileBody> map = new HashMap<>();//若要保持顺序  使用LinkedHashMap
             map.put("a.java", new UploadFileBody(ContentType.JAVA.toMediaType(), file1));
-            map.put("ic_launcher.png", new UploadFileBody(MediaType.parse("image"), file2));
+            map.put("ic_launcher1.png", new UploadFileBody(MediaType.parse("image"), file2));
+
 
             NetWatch.upload("http://upload.qiniu.com/")
                     .tag(this)
@@ -570,7 +578,7 @@ public class MainActivity extends AppCompatActivity {
                         @Override
                         public void onProgress(int progress, long speed, long downloadedSize, long totalSize) {
                             mProgressBar.setProgress(progress);
-                            txt_result.setText(downloadedSize + "/" + totalSize + "" + progress + "");
+                            txt_result.setText(downloadedSize + "/" + totalSize + "     " + progress + "%");
 
                         }
                     })
