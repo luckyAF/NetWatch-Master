@@ -188,7 +188,8 @@ public class NetBuilder {
         }
         return true;
     }
-    @SuppressWarnings("unchecked")
+
+
     public void get(final Map<String, Object> headers,final Map<String, Object> params, final CommonCallBack commonCallBack) {
         if (!allReady()) {
             return;
@@ -613,51 +614,9 @@ public class NetBuilder {
                 .observeOn(Schedulers.io())
                 .subscribe(observer);
     }
-//    /**
-//     *
-//     * @param url             上传地址
-//     * @param jsonParam          参数
-//     * @param fileMap         文件map
-//     * @param callBack        回调
-//     */
-//    @SuppressWarnings("unchecked")
-//    public void uploadD(final String url, String jsonParam, final Map<String, UploadFileBody> fileMap, final UploadCallBack callBack) {
-//        if (!allReady()) {
-//            return;
-//        }
-//        MultipartBody.Builder builder = new MultipartBody.Builder().setType(MultipartBody.FORM);
-//        RequestBody params = RequestBody.create(MediaType.parse("application/json; charset=utf-8"),
-//                jsonParam);
-//        builder.addFormDataPart("_signal","__signal",params);
-//        for(Map.Entry<String,UploadFileBody> entry: fileMap.entrySet()){
-//            builder.addFormDataPart(entry.getKey(), entry.getValue().getFileName(), RequestBody.create(entry.getValue().getMediaType(), entry.getValue().getFile()));
-//        }
-//        RequestBody requestBody =  builder.build();
-//        final Call<ResponseBody> call = NetWatch.getService().uploadD(checkUrl(url),checkHeaders(headers),requestBody);
-//        putCall(tag, url, call);
-//        call.enqueue(new Callback<ResponseBody>() {
-//            @Override
-//            public void onResponse(@NonNull Call<ResponseBody> call,@NonNull Response<ResponseBody> response) {
-//                if (response.code() == 200) {
-//                    callBack.onNext(response.body());
-//                } else {
-//                    callBack.onError(message(response.message()));
-//                }
-//                if (tag != null)
-//                    removeCall(url);
-//
-//            }
-//            @Override
-//            public void onFailure(@NonNull Call<ResponseBody> call,@NonNull Throwable t) {
-//                callBack.onError(t);
-//
-//            }
-//        });
-//
-//    }
 
 
-    @SuppressWarnings("unchecked")
+
     @CheckResult
     private  Map<String, Object> checkParams(Map<String, Object> params) {
         if (params == null) {
@@ -696,7 +655,7 @@ public class NetBuilder {
         if (NetWatch.checkNULL(mes)) {
             mes = "服务器异常，请稍后再试";
         }
-        if (mes.equals("timeout") || mes.equals("SSL handshake timed out")) {
+        if ("timeout".equals(mes) || "SSL handshake timed out".equals(mes)) {
             mes =  "网络请求超时";
         }
         return new Throwable(mes);

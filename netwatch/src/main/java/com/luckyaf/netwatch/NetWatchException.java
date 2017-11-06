@@ -6,17 +6,17 @@ package com.luckyaf.netwatch;
  * @author Created by luckyAF on 2017/8/17
  */
 @SuppressWarnings("unused")
-public class NetWatchThrowable extends Exception {
+public class NetWatchException extends Exception {
 
     private int code;
     private String message;
 
-    public NetWatchThrowable(java.lang.Throwable throwable, int code) {
+    public NetWatchException(java.lang.Throwable throwable, int code) {
         super(throwable);
         this.code = code;
     }
 
-    public NetWatchThrowable(java.lang.Throwable throwable, int code, String message) {
+    public NetWatchException(java.lang.Throwable throwable, int code, String message) {
         super(throwable);
         this.code = code;
         this.message = message;

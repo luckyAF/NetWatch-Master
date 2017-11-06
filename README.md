@@ -17,8 +17,7 @@ NetWatch.init(this,"http://xxxx.com")//base url        。addCommonHeaders(commo
         .openSimpleLog(true)
         //.andSSL() 证书
         .retryOnConnectionFailure(true)//失败重连
-        .build();        
-        .build();
+        .build();  
           
 ```
 

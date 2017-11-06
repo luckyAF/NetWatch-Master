@@ -2,7 +2,7 @@ package com.luckyaf.netwatch.exception;
 
 import android.net.ParseException;
 import android.text.TextUtils;
-import com.luckyaf.netwatch.NetWatchThrowable;
+import com.luckyaf.netwatch.NetWatchException;
 import com.luckyaf.netwatch.utils.Logger;
 
 import org.apache.http.conn.ConnectTimeoutException;
@@ -41,10 +41,10 @@ public class NetException {
             detail = e.getCause().getMessage();
         }
         Logger.e("NetWatch", detail);
-        NetWatchThrowable ex;
+        NetWatchException ex;
         if (!(e instanceof ServerException) && e instanceof HttpException) {
             HttpException httpException = (HttpException) e;
-            ex = new NetWatchThrowable(e, httpException.code());
+            ex = new NetWatchException(e, httpException.code());
             switch (ex.getCode()) {
                 case BAD_REQUEST:
                     ex.setMessage("请求无效");
@@ -97,58 +97,58 @@ public class NetException {
             return ex;
         } else if (e instanceof JSONException
                 || e instanceof ParseException) {
-            ex = new NetWatchThrowable(e, ERROR.PARSE_ERROR);
+            ex = new NetWatchException(e, ERROR.PARSE_ERROR);
             ex.setMessage("解析错误");
             return ex;
         } else if (e instanceof ConnectException) {
-            ex = new NetWatchThrowable(e, ERROR.NETWORK_ERROR);
+            ex = new NetWatchException(e, ERROR.NETWORK_ERROR);
             ex.setMessage("连接失败");
             return ex;
         } else if (e instanceof javax.net.ssl.SSLHandshakeException) {
-            ex = new NetWatchThrowable(e, ERROR.SSL_ERROR);
+            ex = new NetWatchException(e, ERROR.SSL_ERROR);
             ex.setMessage("证书验证失败");
             return ex;
         } else if (e instanceof java.security.cert.CertPathValidatorException) {
             Logger.e("NetWatch", e.getMessage());
-            ex = new NetWatchThrowable(e, ERROR.SSL_NOT_FOUND);
+            ex = new NetWatchException(e, ERROR.SSL_NOT_FOUND);
             ex.setMessage("证书路径没找到");
 
             return ex;
         } else if (e instanceof SSLPeerUnverifiedException) {
             Logger.e("NetWatch", e.getMessage());
-            ex = new NetWatchThrowable(e, ERROR.SSL_NOT_FOUND);
+            ex = new NetWatchException(e, ERROR.SSL_NOT_FOUND);
             ex.setMessage("无有效的SSL证书");
             return ex;
 
         } else if (e instanceof ConnectTimeoutException){
-            ex = new NetWatchThrowable(e, ERROR.TIMEOUT_ERROR);
+            ex = new NetWatchException(e, ERROR.TIMEOUT_ERROR);
             ex.setMessage("连接超时");
             return ex;
         } else if (e instanceof java.net.SocketTimeoutException) {
-            ex = new NetWatchThrowable(e, ERROR.TIMEOUT_ERROR);
+            ex = new NetWatchException(e, ERROR.TIMEOUT_ERROR);
             ex.setMessage("连接超时");
             return ex;
         } else if (e instanceof java.lang.ClassCastException) {
-            ex = new NetWatchThrowable(e, ERROR.FORMAT_ERROR);
+            ex = new NetWatchException(e, ERROR.FORMAT_ERROR);
             ex.setMessage("类型转换出错");
             return ex;
         } else if (e instanceof NullPointerException) {
-            ex = new NetWatchThrowable(e, ERROR.NULL);
+            ex = new NetWatchException(e, ERROR.NULL);
             ex.setMessage("数据有空");
             return ex;
         } else if (e instanceof FormatException) {
             FormatException resultException = (FormatException) e;
-            ex = new NetWatchThrowable(e, resultException.code);
+            ex = new NetWatchException(e, resultException.code);
             ex.setMessage(resultException.message);
             return ex;
         } else if (e instanceof UnknownHostException){
             Logger.e("NetWatch", e.getMessage());
-            ex = new NetWatchThrowable(e, NOT_FOUND);
+            ex = new NetWatchException(e, NOT_FOUND);
             ex.setMessage("服务器地址未找到,请检查网络或Url");
             return ex;
         } else {
             Logger.e("NetWatch", e.getMessage());
-            ex = new NetWatchThrowable(e, ERROR.UNKNOWN);
+            ex = new NetWatchException(e, ERROR.UNKNOWN);
             ex.setMessage(e.getMessage());
             return ex;
         }

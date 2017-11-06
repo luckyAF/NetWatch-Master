@@ -3,6 +3,7 @@ package com.luckyaf.netwatch.utils;
 import android.content.Context;
 import android.os.Environment;
 import android.support.annotation.IntDef;
+import android.support.annotation.NonNull;
 import android.util.Log;
 
 import org.json.JSONArray;
@@ -25,6 +26,10 @@ import java.util.Formatter;
 import java.util.Locale;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.zip.DataFormatException;
 import java.util.zip.Deflater;
 import java.util.zip.Inflater;
@@ -106,11 +111,13 @@ public final class Logger {
 
     public static class Builder {
         public Builder(Context context) {
-            if (defaultDir != null) return;
+            if (defaultDir != null) {
+                return;
+            }
             if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())
-                    && context.getExternalCacheDir() != null)
+                    && context.getExternalCacheDir() != null) {
                 defaultDir = context.getExternalCacheDir() + FILE_SEP + "log" + FILE_SEP;
-            else {
+            } else {
                 defaultDir = context.getCacheDir() + FILE_SEP + "log" + FILE_SEP;
             }
         }
@@ -286,16 +293,22 @@ public final class Logger {
     }
 
     private static void log(final int type, String tag, final Object... contents) {
-        if (!sLogSwitch || (!sLog2ConsoleSwitch && !sLog2FileSwitch)) return;
+        if (!sLogSwitch || (!sLog2ConsoleSwitch && !sLog2FileSwitch)) {
+            return;
+        }
         int type_low = type & 0x0f, type_high = type & 0xf0;
-        if (type_low < sConsoleFilter && type_low < sFileFilter) return;
+        if (type_low < sConsoleFilter && type_low < sFileFilter) {
+            return;
+        }
         final String[] tagAndHead = processTagAndHead(tag);
         String body = processBody(type_high, contents);
         if (sLog2ConsoleSwitch && type_low >= sConsoleFilter) {
             print2Console(type_low, tagAndHead[0], tagAndHead[1] + body);
         }
         if (sLog2FileSwitch || type_high == FILE) {
-            if (type_low >= sFileFilter) print2File(type_low, tagAndHead[0], tagAndHead[2] + body);
+            if (type_low >= sFileFilter) {
+                print2File(type_low, tagAndHead[0], tagAndHead[2] + body);
+            }
         }
     }
 
@@ -407,7 +420,9 @@ public final class Logger {
         } else {
             print(type, tag, msg);
         }
-        if (sLogBorderSwitch) print(type, tag, BOTTOM_BORDER);
+        if (sLogBorderSwitch) {
+            print(type, tag, BOTTOM_BORDER);
+        }
     }
 
     private static void print(final int type, final String tag, String msg) {
@@ -415,7 +430,9 @@ public final class Logger {
     }
 
     private static String addLeftBorder(String msg) {
-        if (!sLogBorderSwitch) return msg;
+        if (!sLogBorderSwitch) {
+            return msg;
+        }
         StringBuilder sb = new StringBuilder();
         String[] lines = msg.split(LINE_SEP);
         for (String line : lines) {
@@ -436,7 +453,15 @@ public final class Logger {
         }
         final String content = time + (T[type - V]) + ("/") + tag + msg + LINE_SEP;
         if (executor == null) {
-            executor = Executors.newSingleThreadExecutor();
+           ThreadFactory threadFactory = new ThreadFactory() {
+               @Override
+               public Thread newThread(@NonNull Runnable r) {
+                   return new Thread("logger_for_netwatch");
+               }
+           };
+            executor = new ThreadPoolExecutor(1, 1,
+                    0L, TimeUnit.MILLISECONDS,
+                    new LinkedBlockingQueue<Runnable>(),threadFactory);
         }
         executor.execute(new Runnable() {
             @Override
@@ -464,8 +489,12 @@ public final class Logger {
 
     private static boolean createOrExistsFile(String filePath) {
         File file = new File(filePath);
-        if (file.exists()) return file.isFile();
-        if (!createOrExistsDir(file.getParentFile())) return false;
+        if (file.exists()) {
+            return file.isFile();
+        }
+        if (!createOrExistsDir(file.getParentFile())) {
+            return false;
+        }
         try {
             return file.createNewFile();
         } catch (IOException e) {
@@ -479,7 +508,9 @@ public final class Logger {
     }
 
     private static boolean isSpace(String s) {
-        if (s == null) return true;
+        if (s == null) {
+            return true;
+        }
         for (int i = 0, len = s.length(); i < len; ++i) {
             if (!Character.isWhitespace(s.charAt(i))) {
                 return false;

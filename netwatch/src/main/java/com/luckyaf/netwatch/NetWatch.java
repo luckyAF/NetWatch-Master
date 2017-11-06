@@ -313,8 +313,9 @@ public class NetWatch {
      */
     @SuppressWarnings("WeakerAccess")
     public static synchronized void putRequest(Object tag, String url, BaseObserver observer) {
-        if (tag == null)
+        if (tag == null) {
             return;
+        }
         synchronized (OBSERVER_MAP) {
             OBSERVER_MAP.put(tag.toString() + url, observer);
         }
@@ -328,8 +329,9 @@ public class NetWatch {
      * @param tag 标签
      */
     public static synchronized void cancelRequest(Object tag) {
-        if (tag == null)
+        if (tag == null) {
             return;
+        }
         List<String> list = new ArrayList<>();
         synchronized (OBSERVER_MAP) {
             for (Map.Entry<String, BaseObserver> entry : OBSERVER_MAP.entrySet()) {
@@ -371,7 +373,7 @@ public class NetWatch {
      * @param url url
      */
     @SuppressWarnings("WeakerAccess")
-    public static synchronized void removeRequest(String url) {
+    private static synchronized void removeRequest(String url) {
         synchronized (OBSERVER_MAP) {
             for (String key : OBSERVER_MAP.keySet()) {
                 if (key.contains(url)) {

@@ -292,8 +292,9 @@ public class FileUtil {
 
         String extension = getExtension(file.getName());
 
-        if (extension.length() > 0)
+        if (extension.length() > 0) {
             return MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension.substring(1));
+        }
 
         return "application/octet-stream";
     }
@@ -374,15 +375,17 @@ public class FileUtil {
             cursor = context.getContentResolver().query(uri, projection, selection, selectionArgs,
                     null);
             if (cursor != null && cursor.moveToFirst()) {
-                if (DEBUG)
+                if (DEBUG) {
                     DatabaseUtils.dumpCursor(cursor);
+                }
 
-                final int column_index = cursor.getColumnIndexOrThrow(column);
-                return cursor.getString(column_index);
+                final int columnIndex = cursor.getColumnIndexOrThrow(column);
+                return cursor.getString(columnIndex);
             }
         } finally {
-            if (cursor != null)
+            if (cursor != null) {
                 cursor.close();
+            }
         }
         return null;
     }
@@ -404,7 +407,7 @@ public class FileUtil {
     @TargetApi(Build.VERSION_CODES.KITKAT)
     public static String getPath(final Context context, final Uri uri) {
 
-        if (DEBUG)
+        if (DEBUG) {
             Log.d(TAG + " File -",
                     "Authority: " + uri.getAuthority() +
                             ", Fragment: " + uri.getFragment() +
@@ -414,6 +417,7 @@ public class FileUtil {
                             ", Host: " + uri.getHost() +
                             ", Segments: " + uri.getPathSegments().toString()
             );
+        }
 
         final boolean isKitKat = Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT;
 
@@ -472,8 +476,9 @@ public class FileUtil {
         else if ("content".equalsIgnoreCase(uri.getScheme())) {
 
             // Return the remote address
-            if (isGooglePhotosUri(uri))
+            if (isGooglePhotosUri(uri)) {
                 return uri.getLastPathSegment();
+            }
 
             return getDataColumn(context, uri, null, null);
         }
@@ -571,8 +576,9 @@ public class FileUtil {
      * @author paulburke
      */
     public static Bitmap getThumbnail(Context context, Uri uri, String mimeType) {
-        if (DEBUG)
+        if (DEBUG) {
             Log.d(TAG, "Attempting to get thumbnail");
+        }
 
         if (!isMediaUri(uri)) {
             Log.e(TAG, "You can only retrieve thumbnails for images and videos.");
@@ -587,8 +593,9 @@ public class FileUtil {
                 cursor = resolver.query(uri, null, null, null, null);
                 if (cursor.moveToFirst()) {
                     final int id = cursor.getInt(0);
-                    if (DEBUG)
+                    if (DEBUG) {
                         Log.d(TAG, "Got thumb ID: " + id);
+                    }
 
                     if (mimeType.contains("video")) {
                         bm = MediaStore.Video.Thumbnails.getThumbnail(
@@ -606,11 +613,13 @@ public class FileUtil {
                     }
                 }
             } catch (Exception e) {
-                if (DEBUG)
+                if (DEBUG) {
                     Log.e(TAG, "getThumbnail", e);
+                }
             } finally {
-                if (cursor != null)
+                if (cursor != null) {
                     cursor.close();
+                }
             }
         }
         return bm;
@@ -684,8 +693,10 @@ public class FileUtil {
         String decodedUrl = Uri.decode(url);
         //String suffixes="avi|mpeg|3gp|mp3|mp4|wav|jpeg|gif|jpg|png|apk|exe|pdf|rar|zip|docx|doc";
         // Pattern pat=Pattern.compile("[\\w]+[\\.]("+suffixes+")");//正则判断
-        Pattern pattern = Pattern.compile("[\\w]+[\\.][\\w]{2,4}");
-        Matcher mc = pattern.matcher(decodedUrl);//条件匹配
+        //Pattern pattern = Pattern.compile("[\\w]+[\\.][\\w]{2,4}");
+
+        //条件匹配
+        Matcher mc = PatternUtil.FILENAME_PATTERN.matcher(decodedUrl);
         while(mc.find()){
             name = mc.group();//截取文件名后缀名
             Logger.i("substring:", name);

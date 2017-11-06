@@ -47,19 +47,19 @@ public enum ContentType {
      */
     FORM("multipart/form-data;");
 
-    private String _type;
+    private String type;
     ContentType(String type){
-        _type = type;
+        this.type = type;
     }
 
 
     @Override
     public String toString() {
-        return _type;
+        return type;
     }
 
     public MediaType toMediaType(){
-        return MediaType.parse(_type);
+        return MediaType.parse(type);
     }
 
 }
