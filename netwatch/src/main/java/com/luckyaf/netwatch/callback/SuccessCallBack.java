@@ -1,4 +1,4 @@
-package com.luckyaf.netwatch.callBack;
+package com.luckyaf.netwatch.callback;
 
 import okhttp3.ResponseBody;
 

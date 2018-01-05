@@ -30,7 +30,8 @@ public class OkHttpProvider {
                             .readTimeout(8, TimeUnit.SECONDS)
                             .writeTimeout(8, TimeUnit.SECONDS)
                             .build();
-                    if (BuildConfig.DEBUG) {//printf logs while  debug
+                    //printf logs while  debug
+                    if (BuildConfig.DEBUG) {
                         HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
                         logging.setLevel(HttpLoggingInterceptor.Level.BODY);
                         client = client.newBuilder().addInterceptor(logging).build();

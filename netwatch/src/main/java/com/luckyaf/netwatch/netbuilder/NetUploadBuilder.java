@@ -6,11 +6,11 @@ import android.text.TextUtils;
 
 import com.luckyaf.netwatch.ContentType;
 import com.luckyaf.netwatch.NetWatch;
-import com.luckyaf.netwatch.callBack.CancelCallBack;
-import com.luckyaf.netwatch.callBack.ErrorCallBack;
-import com.luckyaf.netwatch.callBack.ProgressCallBack;
-import com.luckyaf.netwatch.callBack.StartCallBack;
-import com.luckyaf.netwatch.callBack.SuccessCallBack;
+import com.luckyaf.netwatch.callback.CancelCallBack;
+import com.luckyaf.netwatch.callback.ErrorCallBack;
+import com.luckyaf.netwatch.callback.ProgressCallBack;
+import com.luckyaf.netwatch.callback.StartCallBack;
+import com.luckyaf.netwatch.callback.SuccessCallBack;
 import com.luckyaf.netwatch.interceptor.HeadersInterceptor;
 import com.luckyaf.netwatch.interceptor.ParamsInterceptor;
 import com.luckyaf.netwatch.observer.UploadObserver;

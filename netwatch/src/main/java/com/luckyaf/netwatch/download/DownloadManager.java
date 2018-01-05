@@ -5,12 +5,11 @@ import android.os.Handler;
 import android.os.Looper;
 import android.text.TextUtils;
 
-import com.luckyaf.netwatch.callBack.DownloadCallBack;
-import com.luckyaf.netwatch.callBack.DownloadSuccessCallback;
-import com.luckyaf.netwatch.callBack.ErrorCallBack;
-import com.luckyaf.netwatch.callBack.ProgressCallBack;
+import com.luckyaf.netwatch.callback.DownloadCallBack;
+import com.luckyaf.netwatch.callback.DownloadSuccessCallback;
+import com.luckyaf.netwatch.callback.ErrorCallBack;
+import com.luckyaf.netwatch.callback.ProgressCallBack;
 import com.luckyaf.netwatch.exception.NetException;
-import com.luckyaf.netwatch.utils.CommonUtils;
 import com.luckyaf.netwatch.utils.FileUtil;
 import com.luckyaf.netwatch.utils.Logger;
 import com.luckyaf.netwatch.utils.MimeType;

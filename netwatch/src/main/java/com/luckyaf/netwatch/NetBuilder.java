@@ -6,13 +6,13 @@ import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.widget.Toast;
 
-import com.luckyaf.netwatch.callBack.CommonCallBack;
-import com.luckyaf.netwatch.callBack.DownloadCallBack;
-import com.luckyaf.netwatch.callBack.DownloadSuccessCallback;
-import com.luckyaf.netwatch.callBack.ErrorCallBack;
-import com.luckyaf.netwatch.callBack.ProgressCallBack;
-import com.luckyaf.netwatch.callBack.SuccessCallBack;
-import com.luckyaf.netwatch.callBack.UploadCallBack;
+import com.luckyaf.netwatch.callback.CommonCallBack;
+import com.luckyaf.netwatch.callback.DownloadCallBack;
+import com.luckyaf.netwatch.callback.DownloadSuccessCallback;
+import com.luckyaf.netwatch.callback.ErrorCallBack;
+import com.luckyaf.netwatch.callback.ProgressCallBack;
+import com.luckyaf.netwatch.callback.SuccessCallBack;
+import com.luckyaf.netwatch.callback.UploadCallBack;
 import com.luckyaf.netwatch.interceptor.HeadersInterceptor;
 import com.luckyaf.netwatch.interceptor.ParamsInterceptor;
 import com.luckyaf.netwatch.observer.CommonObserver;
@@ -39,6 +39,7 @@ import static com.luckyaf.netwatch.NetWatch.putRequest;
  *
  * @author Created by luckyAF on 2017/8/14
  */
+@SuppressWarnings("unused")
 public class NetBuilder {
     /**
      * 头部参数

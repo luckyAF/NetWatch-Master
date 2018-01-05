@@ -2,35 +2,31 @@ package com.luckyaf.netwatch.netbuilder;
 
 import android.content.Context;
 import android.support.annotation.CheckResult;
-import android.support.annotation.NonNull;
+import android.support.v4.util.ArrayMap;
 import android.widget.Toast;
 
-import com.luckyaf.netwatch.NetBuilder;
 import com.luckyaf.netwatch.NetWatch;
 import com.luckyaf.netwatch.interceptor.HeadersInterceptor;
 import com.luckyaf.netwatch.interceptor.ParamsInterceptor;
 import com.luckyaf.netwatch.utils.NetUtils;
 
-import java.util.HashMap;
 import java.util.Map;
 
-import okhttp3.OkHttpClient;
 
 /**
  * 类描述：
  *
  * @author Created by luckyAF on 2017/9/1
  */
-
 public class NetBaseBuilder {
     /**
      * 头部参数
      */
-    protected Map<String, Object> headers = new HashMap<>();
+    protected Map<String, Object> headers = new ArrayMap<>();
     /**
      * 参数
      */
-    protected Map<String, Object> params = new HashMap<>();
+    protected Map<String, Object> params = new ArrayMap<>();
     protected String url;
     protected Object tag;
 
@@ -44,55 +40,6 @@ public class NetBaseBuilder {
     protected HeadersInterceptor mHeadersInterceptor;
 
 
-//    public NetBaseBuilder headersInterceptor(HeadersInterceptor headersInterceptor){
-//        this.mHeadersInterceptor = headersInterceptor;
-//        return this;
-//    }
-//
-//    public NetBaseBuilder paramsInterceptor(ParamsInterceptor paramsInterceptor){
-//        this.mParamsInterceptor = paramsInterceptor;
-//        return this;
-//    }
-//    public NetBaseBuilder tag(@NonNull Object tag) {
-//        this.tag = tag;
-//        return this;
-//    }
-//
-//    public NetBaseBuilder headers(@NonNull Map<String, Object> headers) {
-//        this.headers.putAll(headers);
-//        return this;
-//    }
-//
-//    public NetBaseBuilder header(@NonNull String key, Object value) {
-//        this.headers.put(key, value);
-//        return this;
-//    }
-//
-//    public NetBaseBuilder params(@NonNull Map<String, Object> params) {
-//        this.params.putAll(params);
-//        return this;
-//    }
-//
-//    public NetBaseBuilder param(@NonNull String key, Object value) {
-//        this.params.put(key, value);
-//        return this;
-//    }
-//
-//    public NetBaseBuilder newClient(OkHttpClient client){
-//        this.mClient = client;
-//        return this;
-//    }
-//
-//    /**
-//     * 检查网络是否连接，未连接跳转到网络设置界面
-//     */
-//    public NetBaseBuilder checkNetWork(Context context) {
-//        this.mContext = context;
-//        checkNetWork = true;
-//        return this;
-//    }
-
-
     /**
      * 请求前初始检查
      */
@@ -103,7 +50,8 @@ public class NetBaseBuilder {
         }
         if (!NetUtils.isConnected(mContext)) {
             Toast.makeText(mContext, "检测到网络已关闭，请先打开网络", Toast.LENGTH_SHORT).show();
-            NetUtils.openSetting(mContext);//跳转到网络设置界面
+            //跳转到网络设置界面
+            NetUtils.openSetting(mContext);
             return false;
         }
         return true;
@@ -120,9 +68,9 @@ public class NetBaseBuilder {
 
     @SuppressWarnings("unchecked")
     @CheckResult
-    protected   Map<String, Object> checkParams(Map<String, Object> params) {
+    protected     Map<String, Object> checkParams(Map<String, Object> params) {
         if (params == null) {
-            params = new HashMap<>();
+            params = new ArrayMap<>();
         }
         if (mParamsInterceptor != null) {
             params = mParamsInterceptor.checkParams(params);
@@ -136,9 +84,9 @@ public class NetBaseBuilder {
         return params;
     }
     @SuppressWarnings("unchecked")
-    protected  Map<String, Object> checkHeaders(Map<String, Object> headers) {
+    protected    Map<String, Object> checkHeaders(Map<String, Object> headers) {
         if (headers == null) {
-            headers = new HashMap<>();
+            headers = new ArrayMap<>();
         }
         if (mHeadersInterceptor != null) {
             headers = mHeadersInterceptor.checkHeaders(headers);

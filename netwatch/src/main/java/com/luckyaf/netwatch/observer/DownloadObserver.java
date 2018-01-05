@@ -2,13 +2,12 @@ package com.luckyaf.netwatch.observer;
 
 import android.content.Context;
 
-import com.luckyaf.netwatch.callBack.CancelCallBack;
-import com.luckyaf.netwatch.callBack.DownloadCallBack;
-import com.luckyaf.netwatch.callBack.DownloadSuccessCallback;
-import com.luckyaf.netwatch.callBack.ErrorCallBack;
-import com.luckyaf.netwatch.callBack.ProgressCallBack;
-import com.luckyaf.netwatch.callBack.StartCallBack;
-import com.luckyaf.netwatch.callBack.SuccessCallBack;
+import com.luckyaf.netwatch.callback.CancelCallBack;
+import com.luckyaf.netwatch.callback.DownloadCallBack;
+import com.luckyaf.netwatch.callback.DownloadSuccessCallback;
+import com.luckyaf.netwatch.callback.ErrorCallBack;
+import com.luckyaf.netwatch.callback.ProgressCallBack;
+import com.luckyaf.netwatch.callback.StartCallBack;
 import com.luckyaf.netwatch.download.DownloadManager;
 import com.luckyaf.netwatch.exception.NetException;
 import com.luckyaf.netwatch.utils.Logger;

@@ -1,4 +1,4 @@
-package com.luckyaf.netwatch.callBack;
+package com.luckyaf.netwatch.callback;
 
 import okhttp3.ResponseBody;
 
@@ -9,8 +9,25 @@ import okhttp3.ResponseBody;
  */
 
 public interface CommonCallBack {
+     /**
+      * 取消
+      */
      void onCancel();
+
+     /**
+      * 完成
+      */
      void onComplete();
+
+     /**
+      * 错误
+      * @param e
+      */
      void onError(Throwable e);
+
+     /**
+      * 下一步
+      * @param responseBody
+      */
      void onNext(ResponseBody responseBody);
 }

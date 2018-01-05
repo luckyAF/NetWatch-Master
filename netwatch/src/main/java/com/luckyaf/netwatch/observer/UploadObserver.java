@@ -1,13 +1,11 @@
 package com.luckyaf.netwatch.observer;
 
-import com.luckyaf.netwatch.callBack.CancelCallBack;
-import com.luckyaf.netwatch.callBack.ErrorCallBack;
-import com.luckyaf.netwatch.callBack.StartCallBack;
-import com.luckyaf.netwatch.callBack.SuccessCallBack;
-import com.luckyaf.netwatch.callBack.UploadCallBack;
+import com.luckyaf.netwatch.callback.CancelCallBack;
+import com.luckyaf.netwatch.callback.ErrorCallBack;
+import com.luckyaf.netwatch.callback.StartCallBack;
+import com.luckyaf.netwatch.callback.SuccessCallBack;
+import com.luckyaf.netwatch.callback.UploadCallBack;
 import com.luckyaf.netwatch.exception.NetException;
-import com.luckyaf.netwatch.upload.UploadFileBody;
-import com.luckyaf.netwatch.upload.UploadRequestBody;
 
 import io.reactivex.disposables.Disposable;
 import okhttp3.ResponseBody;

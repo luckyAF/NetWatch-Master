@@ -5,32 +5,26 @@ import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
 import com.luckyaf.netwatch.NetWatch;
-import com.luckyaf.netwatch.callBack.CancelCallBack;
-import com.luckyaf.netwatch.callBack.DownloadSuccessCallback;
-import com.luckyaf.netwatch.callBack.ErrorCallBack;
-import com.luckyaf.netwatch.callBack.ProgressCallBack;
-import com.luckyaf.netwatch.callBack.StartCallBack;
-import com.luckyaf.netwatch.callBack.SuccessCallBack;
+import com.luckyaf.netwatch.callback.CancelCallBack;
+import com.luckyaf.netwatch.callback.DownloadSuccessCallback;
+import com.luckyaf.netwatch.callback.ErrorCallBack;
+import com.luckyaf.netwatch.callback.ProgressCallBack;
+import com.luckyaf.netwatch.callback.StartCallBack;
 import com.luckyaf.netwatch.interceptor.HeadersInterceptor;
 import com.luckyaf.netwatch.interceptor.ParamsInterceptor;
 import com.luckyaf.netwatch.observer.DownloadObserver;
-import com.luckyaf.netwatch.observer.UploadObserver;
-import com.luckyaf.netwatch.upload.UploadFileBody;
-import com.luckyaf.netwatch.upload.UploadRequestBody;
 import com.luckyaf.netwatch.utils.FileUtil;
 
 import java.util.Map;
 
 import io.reactivex.schedulers.Schedulers;
-import okhttp3.MultipartBody;
-import okhttp3.RequestBody;
 
 /**
  * 类描述：
  *
  * @author Created by luckyAF on 2017/9/1
  */
-
+@SuppressWarnings("unused")
 public class NetDownloadBuilder extends NetBaseBuilder {
 
     private StartCallBack mStartCallBack;

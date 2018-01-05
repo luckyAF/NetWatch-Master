@@ -4,9 +4,9 @@ import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.NonNull;
 
-import com.luckyaf.netwatch.callBack.ErrorCallBack;
-import com.luckyaf.netwatch.callBack.ProgressCallBack;
-import com.luckyaf.netwatch.callBack.UploadCallBack;
+import com.luckyaf.netwatch.callback.ErrorCallBack;
+import com.luckyaf.netwatch.callback.ProgressCallBack;
+import com.luckyaf.netwatch.callback.UploadCallBack;
 import com.luckyaf.netwatch.exception.NetException;
 import com.luckyaf.netwatch.utils.Logger;
 

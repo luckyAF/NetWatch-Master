@@ -11,15 +11,15 @@ import android.widget.Toast;
 
 import com.luckyaf.netwatch.ContentType;
 import com.luckyaf.netwatch.NetWatch;
-import com.luckyaf.netwatch.callBack.CancelCallBack;
-import com.luckyaf.netwatch.callBack.CommonCallBack;
-import com.luckyaf.netwatch.callBack.DownloadCallBack;
-import com.luckyaf.netwatch.callBack.DownloadSuccessCallback;
-import com.luckyaf.netwatch.callBack.ErrorCallBack;
-import com.luckyaf.netwatch.callBack.ProgressCallBack;
-import com.luckyaf.netwatch.callBack.StartCallBack;
-import com.luckyaf.netwatch.callBack.SuccessCallBack;
-import com.luckyaf.netwatch.callBack.UploadCallBack;
+import com.luckyaf.netwatch.callback.CancelCallBack;
+import com.luckyaf.netwatch.callback.CommonCallBack;
+import com.luckyaf.netwatch.callback.DownloadCallBack;
+import com.luckyaf.netwatch.callback.DownloadSuccessCallback;
+import com.luckyaf.netwatch.callback.ErrorCallBack;
+import com.luckyaf.netwatch.callback.ProgressCallBack;
+import com.luckyaf.netwatch.callback.StartCallBack;
+import com.luckyaf.netwatch.callback.SuccessCallBack;
+import com.luckyaf.netwatch.callback.UploadCallBack;
 import com.luckyaf.netwatch.upload.UploadFileBody;
 import com.luckyaf.netwatch.utils.Logger;
 

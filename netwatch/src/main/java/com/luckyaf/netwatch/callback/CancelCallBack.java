@@ -1,4 +1,4 @@
-package com.luckyaf.netwatch.callBack;
+package com.luckyaf.netwatch.callback;
 
 /**
  * 类描述：
@@ -7,5 +7,8 @@ package com.luckyaf.netwatch.callBack;
  */
 
 public interface CancelCallBack {
+    /**
+     * 取消
+     */
     void onCancel();
 }
