@@ -109,7 +109,8 @@ public class NetUploadBuilder extends NetBaseBuilder{
                 .errorCallBack(mErrorCallBack);
         NetWatch.putRequest(tag, this.url, observer);
 
-        NetWatch.getService().upload(checkUrl(this.url), checkHeaders(headers), checkParams(this.params), uploadRequestBody)
+        NetWatch.getService()
+                .upload(checkUrl(this.url), checkHeaders(headers), checkParams(this.params), uploadRequestBody)
                 .subscribeOn(Schedulers.io())
                 .unsubscribeOn(Schedulers.io())
                 .observeOn(Schedulers.io())
@@ -137,7 +138,8 @@ public class NetUploadBuilder extends NetBaseBuilder{
                 .successCallBack(mSuccessCallBack)
                 .errorCallBack(mErrorCallBack);
         NetWatch.putRequest(tag, this.url, observer);
-        NetWatch.getService().upload(checkUrl(this.url), checkHeaders(headers), uploadRequestBody)
+        NetWatch.getService()
+                .upload(checkUrl(this.url), checkHeaders(headers), uploadRequestBody)
                 .subscribeOn(Schedulers.io())
                 .unsubscribeOn(Schedulers.io())
                 .observeOn(Schedulers.io())

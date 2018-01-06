@@ -37,6 +37,9 @@ import okhttp3.MediaType;
 import okhttp3.ResponseBody;
 import okhttp3.logging.HttpLoggingInterceptor;
 
+/**
+ * @author xiangzhongfei
+ */
 public class MainActivity extends AppCompatActivity {
     private TextView txt_result;
     private ProgressBar mProgressBar;
@@ -311,9 +314,10 @@ public class MainActivity extends AppCompatActivity {
             //读取Assets里面的数据,作为上传源数据
             writeToFile(getAssets().open("a.java"), file1);
             writeToFile(getAssets().open("ic_launcher.png"), file2);
-            Map<String, UploadFileBody> map = new HashMap<>();//若要保持顺序  使用LinkedHashMap
-            map.put("a.java", new UploadFileBody(ContentType.JAVA.toMediaType(), file1));
-            map.put("ic_launcher.png", new UploadFileBody(MediaType.parse("image"), file2));
+            //若要保持顺序  使用LinkedHashMap
+            Map<String, UploadFileBody> map = new HashMap<>();
+            map.put("a.java", new UploadFileBody(ContentType.JAVA, file1));
+            map.put("ic_launcher.png", new UploadFileBody(ContentType.IMAGE, file2));
 
             NetWatch.getNetBuilder(this)
                     .tag(this)
@@ -545,9 +549,10 @@ public class MainActivity extends AppCompatActivity {
             //读取Assets里面的数据,作为上传源数据
             writeToFile(getAssets().open("a.java"), file1);
             writeToFile(getAssets().open("ic_launcher.png"), file2);
-            Map<String, UploadFileBody> map = new HashMap<>();//若要保持顺序  使用LinkedHashMap
-            map.put("a.java", new UploadFileBody(ContentType.JAVA.toMediaType(), file1));
-            map.put("ic_launcher1.png", new UploadFileBody(MediaType.parse("image"), file2));
+            //若要保持顺序  使用LinkedHashMap
+            Map<String, UploadFileBody> map = new HashMap<>();
+            map.put("a.java", new UploadFileBody(ContentType.JAVA, file1));
+            map.put("ic_launcher1.png", new UploadFileBody(ContentType.IMAGE, file2));
 
 
             NetWatch.upload("http://upload.qiniu.com/")

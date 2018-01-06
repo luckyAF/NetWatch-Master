@@ -3,6 +3,8 @@ package com.luckyaf.netwatch.upload;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
+import com.luckyaf.netwatch.ContentType;
+
 import java.io.File;
 
 import okhttp3.MediaType;
@@ -14,21 +16,22 @@ import okhttp3.MediaType;
  */
 
 public class UploadFileBody {
-    private MediaType mediaType;
+    private ContentType mContentType;
     private File file;
     private String fileName;
-    public UploadFileBody(@NonNull MediaType mediaType, @NonNull File file){
-        this.mediaType = mediaType;
+    public UploadFileBody(@NonNull ContentType contentType, @NonNull File file){
+        this.mContentType = contentType;
         this.file = file;
     }
 
-    public UploadFileBody(@NonNull MediaType mediaType, @NonNull File file,@NonNull String fileName){
-        this.mediaType = mediaType;
+    public UploadFileBody(@NonNull ContentType contentType, @NonNull File file,@NonNull String fileName){
+        this.mContentType = contentType;
+
         this.file = file;
         this.fileName = fileName;
     }
     public MediaType getMediaType(){
-        return this.mediaType;
+        return this.mContentType.toMediaType();
     }
 
     public File getFile(){
