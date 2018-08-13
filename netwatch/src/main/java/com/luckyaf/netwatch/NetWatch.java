@@ -62,6 +62,10 @@ public class NetWatch {
         return mService;
     }
 
+//    public static <T> T getService(final Class<T> service ){
+//
+//    }
+
     @SuppressWarnings("WeakerAccess")
     public static NetWatch getInstance() {
         if (mInstance == null) {
@@ -300,6 +304,10 @@ public class NetWatch {
 
             mInstance = new NetWatch(applicationContext, retrofitHttpService);
         }
+    }
+
+    public void setService(final Class<?> service){
+
     }
 
     @CheckResult

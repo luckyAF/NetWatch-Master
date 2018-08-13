@@ -1,7 +1,8 @@
 package com.luckyaf.netwatch.provider;
 
 import android.content.Context;
-import android.support.compat.BuildConfig;
+
+import com.luckyaf.netwatch.BuildConfig;
 
 import java.util.concurrent.TimeUnit;
 

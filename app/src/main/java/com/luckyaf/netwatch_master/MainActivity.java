@@ -37,6 +37,8 @@ import okhttp3.MediaType;
 import okhttp3.ResponseBody;
 import okhttp3.logging.HttpLoggingInterceptor;
 
+
+
 /**
  * @author xiangzhongfei
  */
@@ -185,7 +187,6 @@ public class MainActivity extends AppCompatActivity {
             object.put("start", "0");
             object.put("count", "1");
         } catch (JSONException e) {
-            // do nothinf
         }
         txt_result.setText(object.toString());
 

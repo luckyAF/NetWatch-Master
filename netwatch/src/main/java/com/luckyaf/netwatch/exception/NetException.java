@@ -5,7 +5,6 @@ import android.text.TextUtils;
 import com.luckyaf.netwatch.NetWatchException;
 import com.luckyaf.netwatch.utils.Logger;
 
-import org.apache.http.conn.ConnectTimeoutException;
 import org.json.JSONException;
 
 import java.net.ConnectException;
@@ -119,12 +118,13 @@ public class NetException {
             ex = new NetWatchException(e, ERROR.SSL_NOT_FOUND);
             ex.setMessage("无有效的SSL证书");
             return ex;
-
-        } else if (e instanceof ConnectTimeoutException){
-            ex = new NetWatchException(e, ERROR.TIMEOUT_ERROR);
-            ex.setMessage("连接超时");
-            return ex;
-        } else if (e instanceof java.net.SocketTimeoutException) {
+        }
+//        } else if (e instanceof ConnectTimeoutException){
+//            ex = new NetWatchException(e, ERROR.TIMEOUT_ERROR);
+//            ex.setMessage("连接超时");
+//            return ex;
+//        }
+        else if (e instanceof java.net.SocketTimeoutException) {
             ex = new NetWatchException(e, ERROR.TIMEOUT_ERROR);
             ex.setMessage("连接超时");
             return ex;
