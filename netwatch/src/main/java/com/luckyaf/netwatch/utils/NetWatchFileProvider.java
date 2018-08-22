@@ -5,8 +5,7 @@ import android.support.v4.content.FileProvider;
 /**
  * 类描述：
  *
- * @author Created by luckyAF on 2017/8/30
+ * @author Created by luckyAF on 2018/8/20
  */
-
 public class NetWatchFileProvider extends FileProvider {
 }

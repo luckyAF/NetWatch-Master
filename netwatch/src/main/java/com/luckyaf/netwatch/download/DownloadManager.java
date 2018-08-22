@@ -1,270 +1,161 @@
 package com.luckyaf.netwatch.download;
 
-import android.content.Context;
-import android.os.Handler;
-import android.os.Looper;
-import android.text.TextUtils;
+import android.content.ContentValues;
+import android.database.Cursor;
 
-import com.luckyaf.netwatch.callback.DownloadCallBack;
-import com.luckyaf.netwatch.callback.DownloadSuccessCallback;
-import com.luckyaf.netwatch.callback.ErrorCallBack;
-import com.luckyaf.netwatch.callback.ProgressCallBack;
-import com.luckyaf.netwatch.exception.NetException;
-import com.luckyaf.netwatch.utils.FileUtil;
-import com.luckyaf.netwatch.utils.Logger;
-import com.luckyaf.netwatch.utils.MimeType;
+import com.luckyaf.netwatch.constant.ProgressConstant;
+import com.luckyaf.netwatch.db.BaseDao;
+import com.luckyaf.netwatch.db.DBHelper;
+import com.luckyaf.netwatch.model.Progress;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.util.HashMap;
+import java.util.List;
 
-import okhttp3.ResponseBody;
+import okhttp3.Call;
+import okhttp3.OkHttpClient;
 
 /**
  * 类描述：
  *
- * @author Created by luckyAF on 2017/8/16
+ * @author Created by luckyAF on 2018/8/20
  */
-@SuppressWarnings("unused")
-public class DownloadManager {
-    public static final String TAG = "NetWatch:DownLoadManager";
-    private DownloadCallBack callBack;
-    private DownloadSuccessCallback mSuccessCallback;
-    private ErrorCallBack mErrorCallBack;
-    private ProgressCallBack mProgressCallBack;
-    private static String fileSuffix = ".tmpl";
-    private static String defPath = "";
-    private Handler handler;
-    private boolean isCancel = false;
-    private String key;
-    private long previousTime;
-    private long nowTime;
-    private long intervalTime;
+public class DownloadManager extends BaseDao<Progress> {
 
-    public DownloadManager() {
-        handler = new Handler(Looper.getMainLooper());
+    private HashMap<Object, DownloadTask> downloadTasks;//用来存放各个下载的请求
+    private HashMap<Object, Call> downloadCalls;
+    private OkHttpClient mClient;//OKHttpClient;
+
+    private DownloadManager (){
+        super(new DBHelper());
+        downloadTasks = new HashMap<>();
+        downloadCalls = new HashMap<>();
+        mClient = new OkHttpClient.Builder().build();
+    }
+    public static  DownloadManager getInstance() {
+        return Holder.INSTANCE;
     }
 
-    public DownloadManager downloadCallBack(DownloadCallBack callBack) {
-        this.callBack = callBack;
-        return this;
+    @Override
+    public String getTableName() {
+        return DBHelper.TABLE_DOWNLOAD;
     }
 
-    public DownloadManager successCallBack(DownloadSuccessCallback successCallback) {
-        this.mSuccessCallback = successCallback;
-        return this;
+    @Override
+    public void unInit() {
+
     }
 
-    public DownloadManager progressCallBack(ProgressCallBack progressCallBack) {
-        this.mProgressCallBack = progressCallBack;
-        return this;
+    @Override
+    public Progress parseCursorToBean(Cursor cursor) {
+        return Progress.parseCursorToBean(cursor);
     }
 
-    public DownloadManager errorCallBack(ErrorCallBack errorCallBack) {
-        this.mErrorCallBack = errorCallBack;
-        return this;
+    @Override
+    public ContentValues getContentValues(Progress progress) {
+        return Progress.buildContentValues(progress);
+    }
+    private static class Holder {
+        private static final DownloadManager INSTANCE = new DownloadManager();
     }
 
 
-    private static DownloadManager instance;
+    public OkHttpClient getClient(){
+        return mClient;
+    }
+
+    public DownloadTask getDownloadTask(Progress progress){
+        if(downloadTasks.containsKey(progress.getTag())){
+            return downloadTasks.get(progress.getTag());
+        } else{
+            DownloadTask downloadTask = DownloadTask.createTask(progress);
+            downloadTasks.put(progress.getTag(),downloadTask);
+            return downloadTask;
+        }
+    }
 
 
     /**
-     * DownLoadManager getInstance
+     * 暂停任务
+     * @param tag  tag
      */
-    public static synchronized DownloadManager getInstance() {
-        if (instance == null) {
-            instance = new DownloadManager();
+    public void cancelRequest(Object tag){
+        DownloadTask task = downloadTasks.get(tag);
+        if (task != null) {
+            task.pause();//取消
         }
-        return instance;
     }
 
-    private void onError(final Throwable e) {
-        if (callBack == null && mErrorCallBack == null) {
-            return;
-        }
-        handler.post(new Runnable() {
-            @Override
-            public void run() {
-                if (callBack != null) {
-                    callBack.onError(NetException.handleException(e));
-                }
-                if (mErrorCallBack != null) {
-                    mErrorCallBack.onError(NetException.handleException(e));
-                }
-            }
-        });
-    }
-
-    public void onProgress(final String key, final int progress, final long speed, final long downloadedSize, final long totalSize) {
-        if (callBack == null && mProgressCallBack == null) {
-            return;
-        }
-        handler.post(new Runnable() {
-            @Override
-            public void run() {
-                if (callBack != null) {
-                    callBack.onProgress(key, progress, speed, downloadedSize, totalSize);
-                }
-                if (mProgressCallBack != null) {
-                    mProgressCallBack.onProgress(progress, speed, downloadedSize, totalSize);
-                }
-            }
-        });
-    }
-
-    public void onSuccess(final String key, final String path, final String name, final long fileSize) {
-        Logger.d(TAG, "handler sucess");
-
-        if (callBack == null && mSuccessCallback == null) {
-            return;
-        }
-        Logger.d(TAG, "handler sucess");
-        handler.post(new Runnable() {
-            @Override
-            public void run() {
-                if (callBack != null) {
-                    callBack.onSuccess(key, path, name, fileSize);
-                }
-                if (mSuccessCallback != null) {
-                    mSuccessCallback.onSuccess(key, path, name, fileSize);
-                }
-            }
-        });
-
-    }
-
-
-    public void setCancel(Boolean isCancel) {
-        this.isCancel = isCancel;
-    }
-
-    public boolean writeResponseBodyToDisk(final String key, String path, String name, Context context, ResponseBody body) {
-
-        if (body == null) {
-            Logger.e(TAG, key + " : ResponseBody is null");
-            finalOnError(new NullPointerException("the " + key + " ResponseBody is null"));
-            return false;
-        }
-        Logger.v(TAG, "Key:-->" + key);
-
-        String type = "";
-        if (body.contentType() != null) {
-            type = body.contentType().toString();
-        } else {
-            Logger.d(TAG, "MediaType-->,无法获取");
-        }
-
-        if (!TextUtils.isEmpty(type)) {
-            Logger.d(TAG, "contentType:>>>>" + body.contentType().toString());
-            if (!TextUtils.isEmpty(MimeType.getInstance().getSuffix(type))) {
-                fileSuffix = MimeType.getInstance().getSuffix(type);
-            }
-        }
-
-        if (!TextUtils.isEmpty(name)) {
-            if (!name.contains(".")) {
-                name = name + fileSuffix;
-            }
-        }
-        // FIx bug:filepath error,    by username @NBInfo  with gitHub
-        if (path == null) {
-            File filepath = new File(path = context.getExternalFilesDir(null) + File.separator + "DownLoads");
-            if (!filepath.exists()) {
-                filepath.mkdirs();
-            }
-            path = context.getExternalFilesDir(null) + File.separator + "DownLoads" + File.separator;
-        }
-
-        if (new File(path + name).exists()) {
-            FileUtil.deleteFile(path);
-        }
-        Logger.d(TAG, "path:-->" + path);
-        Logger.d(TAG, "name:->" + name);
-        previousTime = System.currentTimeMillis();
-        try {
-            // todo change the file location/name according to your needs
-            File futureStudioIconFile = new File(path + name);
-            InputStream inputStream = null;
-            OutputStream outputStream = null;
-            try {
-                byte[] fileReader = new byte[4096];
-
-                final long fileSize = body.contentLength();
-                long fileSizeDownloaded = 0;
-                int updateCount = 0;
-                Logger.d(TAG, "file length: " + fileSize);
-                inputStream = body.byteStream();
-                outputStream = new FileOutputStream(futureStudioIconFile);
-
-                while (true) {
-                    int read = inputStream.read(fileReader);
-                    if (read == -1) {
-                        break;
-                    }
-                    outputStream.write(fileReader, 0, read);
-                    fileSizeDownloaded += read;
-                    int progress;
-                    if (fileSize == -1 || fileSize == 0) {
-                        progress = 100;
-                    } else {
-                        progress = (int) (fileSizeDownloaded * 100 / fileSize);
-                    }
-
-
-                    if (updateCount == 0 || progress >= updateCount) {
-                        updateCount += 1;
-                        if (callBack != null || mProgressCallBack != null) {
-                            handler = new Handler(Looper.getMainLooper());
-
-                            nowTime = System.currentTimeMillis();
-                            intervalTime = (nowTime - previousTime) / 1000;
-                            previousTime = nowTime;
-                            if (intervalTime == 0) {
-                                intervalTime += 1;
-                            }
-                            final long networkSpeed = read / intervalTime;
-                            onProgress(key, progress, networkSpeed, fileSizeDownloaded, fileSize);
-
-                        }
-                    }
-                }
-
-                outputStream.flush();
-                Logger.d(TAG, "file downloaded: " + fileSizeDownloaded + " of " + fileSize);
-                Logger.d(TAG,"callBack != null" + callBack != null + "!");
-                Logger.d(TAG,"mSuccessCallback != null" + mSuccessCallback != null+ "!");
-
-                Logger.d(TAG,"onSuccess");
-                onSuccess(key, path, name, fileSize);
-                Logger.d(TAG, "file downloaded: " + fileSizeDownloaded + " of " + fileSize);
-                Logger.d(TAG, "file downloaded: is sucess");
-
-                return true;
-            } catch (IOException e) {
-                finalOnError(e);
-                return false;
-            } finally {
-                if (inputStream != null) {
-                    inputStream.close();
-                }
-                if (outputStream != null) {
-                    outputStream.close();
-                }
-            }
-        } catch (IOException e) {
-            finalOnError(e);
-            return false;
+    /**
+     * 删除任务
+     * @param tag  tag
+     * @param deleteFile  是否删除源文件
+     */
+    public void removeRequest(Object tag,boolean deleteFile){
+        DownloadTask task = downloadTasks.get(tag);
+        if (task != null) {
+            task.remove(deleteFile);
         }
     }
 
 
-    private void finalOnError(final Exception e) {
-        if ((callBack == null && mErrorCallBack == null )|| isCancel) {
-            return;
-        }
-        onError(NetException.handleException(e));
+    public void addCall(Object tag,Call call){
+        downloadCalls.put(tag,call);
     }
+
+    public void cancelCall(Object tag) {
+        Call call = downloadCalls.get(tag);
+        if (call != null) {
+            call.cancel();//取消
+        }
+    }
+
+
+    public void removeCal(Object tag) {
+        downloadCalls.remove(tag);
+    }
+
+
+    /** 获取下载任务 */
+    public Progress get(String tag) {
+        return queryOne(ProgressConstant.TAG + "=?", new String[]{tag});
+    }
+
+    /** 移除下载任务 */
+    public void delete(String taskKey) {
+        delete(ProgressConstant.TAG + "=?", new String[]{taskKey});
+    }
+
+    /** 更新下载任务 */
+    public boolean update(Progress progress) {
+        return update(progress, ProgressConstant.TAG + "=?", new String[]{progress.getTag()});
+    }
+
+    /** 更新下载任务 */
+    public boolean update(ContentValues contentValues, String tag) {
+        return update(contentValues, ProgressConstant.TAG + "=?", new String[]{tag});
+    }
+
+    /** 获取所有下载信息 */
+    public List<Progress> getAll() {
+        return query(null, null, null, null, null, null , null);
+    }
+
+    /** 获取已所有下载信息 */
+    public List<Progress> getFinished() {
+        return query(null, "status=?", new String[]{ProgressConstant.FINISHED + ""}, null, null, null, null);
+    }
+
+    /** 获取未完成下载信息 */
+    public List<Progress> getDownloading() {
+        return query(null, "status not in(?)", new String[]{ProgressConstant.FINISHED + ""}, null, null, null, null);
+    }
+
+    /** 清空下载任务 */
+    public boolean clear() {
+        return deleteAll();
+    }
+
+
+
+
 }

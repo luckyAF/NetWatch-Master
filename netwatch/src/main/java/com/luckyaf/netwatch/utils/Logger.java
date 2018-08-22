@@ -1,5 +1,4 @@
 package com.luckyaf.netwatch.utils;
-
 import android.content.Context;
 import android.os.Environment;
 import android.support.annotation.IntDef;
@@ -40,15 +39,13 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
-
 /**
  * 类描述：
  *
- * @author Created by luckyAF on 2017/8/16
+ * @author Created by luckyAF on 2018/8/21
  */
+public class Logger {
 
-@SuppressWarnings("unused")
-public final class Logger {
 //    Logger.Builder builder = new Logger.Builder()
 //            .setLogSwitch(BuildConfig.DEBUG)// 设置log总开关，包括输出到控制台和文件，默认开
 //            .setConsoleSwitch(BuildConfig.DEBUG)// 设置是否输出到控制台开关，默认开
@@ -195,6 +192,13 @@ public final class Logger {
                     + LINE_SEP + "fileFilter: " + T[sFileFilter - V];
         }
     }
+
+
+    public static void printStackTrace(Exception e){
+        e(e.getMessage());
+    }
+
+
 
     public static void v(Object contents) {
         log(V, sGlobalTag, contents);
@@ -453,12 +457,12 @@ public final class Logger {
         }
         final String content = time + (T[type - V]) + ("/") + tag + msg + LINE_SEP;
         if (executor == null) {
-           ThreadFactory threadFactory = new ThreadFactory() {
-               @Override
-               public Thread newThread(@NonNull Runnable r) {
-                   return new Thread("logger_for_netwatch");
-               }
-           };
+            ThreadFactory threadFactory = new ThreadFactory() {
+                @Override
+                public Thread newThread(@NonNull Runnable r) {
+                    return new Thread("logger_for_netwatch");
+                }
+            };
             executor = new ThreadPoolExecutor(1, 1,
                     0L, TimeUnit.MILLISECONDS,
                     new LinkedBlockingQueue<Runnable>(),threadFactory);
