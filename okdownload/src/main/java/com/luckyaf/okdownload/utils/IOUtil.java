@@ -1,4 +1,4 @@
-package com.luckyaf.netwatch.utils;
+package com.luckyaf.okdownload.utils;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -6,7 +6,7 @@ import java.io.IOException;
 /**
  * 类描述：
  *
- * @author Created by luckyAF on 2018/8/20
+ * @author Created by luckyAF on 2018/8/23
  */
 public class IOUtil {
 
@@ -20,8 +20,6 @@ public class IOUtil {
             e.printStackTrace();
         }
     }
-
-
     public static void closeAll(Closeable... closeables){
         if(closeables == null){
             return;

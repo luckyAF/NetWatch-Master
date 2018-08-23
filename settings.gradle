@@ -1,1 +1,1 @@
-include ':app', ':netwatch'
+include ':app', ':netwatch', ':okdownload'
