@@ -2,7 +2,6 @@ package com.luckyaf.netwatch.utils;
 
 import android.text.TextUtils;
 
-import com.luckyaf.netwatch.constant.HttpConstant;
 
 import java.io.File;
 import java.io.UnsupportedEncodingException;
@@ -20,43 +19,8 @@ import okhttp3.Response;
  */
 public class FileUtil {
 
-    /** 根据响应头或者url获取文件名 */
-    public static String getNetFileName(Response response, String url) {
-        String fileName = getHeaderFileName(response);
-        if (TextUtils.isEmpty(fileName)) fileName = getUrlFileName(url);
-        if (TextUtils.isEmpty(fileName)) fileName = "unknownFile_" + System.currentTimeMillis();
-        try {
-            fileName = URLDecoder.decode(fileName, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-        return fileName;
-    }
 
 
-    private static String getHeaderFileName(Response response) {
-        String dispositionHeader = response.header(HttpConstant.HEAD_KEY_CONTENT_DISPOSITION);
-        if (dispositionHeader != null) {
-            //文件名可能包含双引号，需要去除
-            dispositionHeader = dispositionHeader.replaceAll("\"", "");
-            String split = "filename=";
-            int indexOf = dispositionHeader.indexOf(split);
-            if (indexOf != -1) {
-                return dispositionHeader.substring(indexOf + split.length(), dispositionHeader.length());
-            }
-            split = "filename*=";
-            indexOf = dispositionHeader.indexOf(split);
-            if (indexOf != -1) {
-                String fileName = dispositionHeader.substring(indexOf + split.length(), dispositionHeader.length());
-                String encode = "UTF-8''";
-                if (fileName.startsWith(encode)) {
-                    fileName = fileName.substring(encode.length(), fileName.length());
-                }
-                return fileName;
-            }
-        }
-        return null;
-    }
 
     /**
      * 通过 ‘？’ 和 ‘/’ 判断文件名

@@ -110,7 +110,7 @@ public class DownloadActivity extends AppCompatActivity {
                 holder.getView(R.id.btnStart).setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        downloadTask.start();
+                        downloadTask.setMaxSpeed(250).start();
                     }
                 });
                 holder.getView(R.id.btnCancel).setOnClickListener(new View.OnClickListener() {
@@ -150,6 +150,7 @@ public class DownloadActivity extends AppCompatActivity {
         }).subscribe(new Consumer<List<DownloadRequest>>() {
             @Override
             public void accept(List<DownloadRequest> requests) throws Exception {
+                requests.clear();
                 requestList.addAll(requests);
                 Logger.d("progressList", requestList);
                 mInnerAdapter.notifyDataSetChanged();

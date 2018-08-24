@@ -16,15 +16,17 @@ import okio.Okio;
 public class NewResponseBody extends ResponseBody {
     private final ResponseBody responseBody;
     private final ReadCallback readListener;
+    private int limitSpeed;
     private BufferedSource progressSource;
-    public static ResponseBody upgrade(ResponseBody responseBody ,ReadCallback readListener){
-        return new NewResponseBody(responseBody,readListener);
+    public static ResponseBody upgrade(ResponseBody responseBody ,int limitSpeed,ReadCallback readListener){
+        return new NewResponseBody(responseBody,limitSpeed,readListener);
     }
 
 
 
-    private NewResponseBody(ResponseBody responseBody,ReadCallback readListener) {
+    private NewResponseBody(ResponseBody responseBody,int limitSpeed,ReadCallback readListener) {
         this.responseBody = responseBody;
+        this.limitSpeed = limitSpeed;
         this.readListener = readListener;
     }
 
@@ -43,7 +45,7 @@ public class NewResponseBody extends ResponseBody {
         if (readListener == null) {
             return responseBody.source();
         }
-        SuperInputStream  inputStream = new SuperInputStream(responseBody.source().inputStream(),readListener);
+        SuperInputStream  inputStream = new SuperInputStream(responseBody.source().inputStream(),limitSpeed,readListener);
         progressSource = Okio.buffer(Okio.source(inputStream));
         return progressSource;
     }

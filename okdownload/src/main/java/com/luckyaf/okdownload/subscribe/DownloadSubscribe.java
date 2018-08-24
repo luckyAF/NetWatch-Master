@@ -109,7 +109,7 @@ public class DownloadSubscribe implements ObservableOnSubscribe<Progress> {
             }
 
             ResponseBody body = response.body();
-            ResponseBody responseBody = NewResponseBody.upgrade(body, new ReadCallback() {
+            ResponseBody responseBody = NewResponseBody.upgrade(body,speedLimit, new ReadCallback() {
                 @Override
                 public void call(int size) {
                     tempReadSize += size;
@@ -140,8 +140,7 @@ public class DownloadSubscribe implements ObservableOnSubscribe<Progress> {
             }
 
             InputStream responseStream = responseBody.byteStream();
-            LimitInputStream inputStream = new LimitInputStream(responseStream, new BandWidthLimiter(speedLimit));
-            BufferedInputStream in = new BufferedInputStream(inputStream, 8 * 1024);
+            BufferedInputStream in = new BufferedInputStream(responseStream, 8 * 1024);
             byte[] buffer = new byte[1024 * 8];//缓冲数组8kB
             try {
                 int len;
@@ -160,7 +159,6 @@ public class DownloadSubscribe implements ObservableOnSubscribe<Progress> {
                 IOUtil.closeQuietly(randomAccessFile);
                 IOUtil.closeQuietly(in);
                 IOUtil.closeQuietly(responseStream);
-                IOUtil.closeQuietly(inputStream);
                 DownloadManager.getInstance().removeTask(downloadRequest.getTag());
             }
             if(null != disposable && !disposable.isDisposed()){

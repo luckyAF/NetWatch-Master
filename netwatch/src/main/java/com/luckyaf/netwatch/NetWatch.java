@@ -3,9 +3,8 @@ package com.luckyaf.netwatch;
 import android.app.Application;
 import android.content.Context;
 import android.support.annotation.NonNull;
-import android.support.v4.util.Preconditions;
 
-import com.luckyaf.netwatch.request.DownloadRequest;
+import com.luckyaf.netwatch.utils.CheckUtils;
 
 /**
  * 类描述：
@@ -46,19 +45,10 @@ public class NetWatch {
 
 
 
-    public static DownloadRequest download(@NonNull String url){
-        return new DownloadRequest(url);
-    }
-
-
-
-
-
-
 
     /** 获取全局上下文 */
     public Context getContext() {
-        Preconditions.checkNotNull(context, "please call init() first in application!");
+        CheckUtils.checkNotNull(context, "please call init() first in application!");
         return context;
     }
 
