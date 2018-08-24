@@ -14,7 +14,7 @@ public class Progress {
     private float fraction;
 
 
-    Progress(long speed,float fraction,long currentSize,long totalSize){
+    public Progress(long speed,float fraction,long currentSize,long totalSize){
         this.speed = speed;
         this.fraction = fraction;
         this.currentSize = currentSize;

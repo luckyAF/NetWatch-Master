@@ -1,32 +1,31 @@
 package com.luckyaf.okdownload.speedContral;
 
 
+import com.luckyaf.okdownload.callback.ReadCallback;
+
 import okhttp3.MediaType;
 import okhttp3.ResponseBody;
 import okio.BufferedSource;
 import okio.Okio;
 
 /**
- * 类描述：
+ * 类描述：新的ResponseBody
  *
  * @author Created by luckyAF on 2018/8/23
  */
 public class NewResponseBody extends ResponseBody {
     private final ResponseBody responseBody;
-    private final SpeedCallback speedListener;
-    private int speedLimit;
+    private final ReadCallback readListener;
     private BufferedSource progressSource;
-
-    public static ResponseBody upgrade(ResponseBody responseBody,int speedLimit ,SpeedCallback speedListener){
-        return new NewResponseBody(responseBody,speedLimit,speedListener);
+    public static ResponseBody upgrade(ResponseBody responseBody ,ReadCallback readListener){
+        return new NewResponseBody(responseBody,readListener);
     }
 
 
 
-    private NewResponseBody(ResponseBody responseBody,int speedLimit ,SpeedCallback speedListener) {
+    private NewResponseBody(ResponseBody responseBody,ReadCallback readListener) {
         this.responseBody = responseBody;
-        this.speedLimit = speedLimit;
-        this.speedListener = speedListener;
+        this.readListener = readListener;
     }
 
     @Override
@@ -41,10 +40,10 @@ public class NewResponseBody extends ResponseBody {
 
     @Override
     public BufferedSource source() {
-        if (speedListener == null) {
+        if (readListener == null) {
             return responseBody.source();
         }
-        SuperInputStream  inputStream = new SuperInputStream(responseBody.source().inputStream(), speedLimit, speedListener);
+        SuperInputStream  inputStream = new SuperInputStream(responseBody.source().inputStream(),readListener);
         progressSource = Okio.buffer(Okio.source(inputStream));
         return progressSource;
     }

@@ -1,7 +1,6 @@
 package com.luckyaf.okdownload.speedContral;
 
-import com.luckyaf.okdownload.utils.BandWidthLimiter;
-
+import com.luckyaf.okdownload.callback.ReadCallback;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -13,29 +12,29 @@ import java.io.InputStream;
 public class SuperInputStream  extends InputStream {
 
     private InputStream is;
-    private BandWidthLimiter bandWidthLimiter;
-    private SpeedCallback mListener;
+    private ReadCallback mListener;
 
-    public SuperInputStream(InputStream is, int limitSpeed, SpeedCallback listener) {
+
+
+    public SuperInputStream(InputStream is, ReadCallback listener) {
         this.is = is;
-        this.bandWidthLimiter = new BandWidthLimiter(limitSpeed);
         mListener = listener;
     }
 
     @Override
     public int read() throws IOException {
-        if (this.bandWidthLimiter != null){
-            this.bandWidthLimiter.limitNextBytes();
-        }
 
-        return this.is.read();
+        int read =  this.is.read();
+        mListener.call(read);
+        return read;
     }
 
     public int read(byte b[], int off, int len) throws IOException {
-        if (bandWidthLimiter != null) {
-            bandWidthLimiter.limitNextBytes(len);
-        }
-
-        return this.is.read(b, off, len);
+//        if (bandWidthLimiter != null) {
+//            bandWidthLimiter.limitNextBytes(len);
+//        }
+        int read =  this.is.read(b, off, len);
+        mListener.call(read);
+        return read;
     }
 }

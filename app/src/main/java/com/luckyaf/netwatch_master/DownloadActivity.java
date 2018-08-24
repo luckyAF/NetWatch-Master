@@ -11,7 +11,9 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.luckyaf.netwatch.utils.Logger;
 import com.luckyaf.netwatch_master.adapter.BaseAdapter;
@@ -63,6 +65,20 @@ public class DownloadActivity extends AppCompatActivity {
                 int intProgress = (int) (data.getCurrentSize() * 100 / data.getTotalSize());
                 ((ProgressBar) holder.getView(R.id.progress)).setProgress(intProgress);
                 holder.setText(R.id.txtProgress, intProgress + " %");
+                if(StatusConstant.FINISHED == data.getStatus()){
+                    Button btnStart = holder.getView(R.id.btnStart);
+                    btnStart.setText("已完成");
+                    btnStart.setClickable(false);
+                }else if(StatusConstant.ERROR == data.getStatus()){
+                    Button btnStart = holder.getView(R.id.btnStart);
+                    btnStart.setText("任务错误");
+                    btnStart.setClickable(false);
+                }else{
+                    Button btnStart = holder.getView(R.id.btnStart);
+                    btnStart.setText("开始下载");
+                    btnStart.setClickable(true);
+                }
+
                 DownloadManager.getInstance()
                         .listen(data.getTag())
                         .subscribe(new Observer<Progress>() {
@@ -81,7 +97,7 @@ public class DownloadActivity extends AppCompatActivity {
 
                             @Override
                             public void onError(Throwable e) {
-
+                                Toast.makeText(DownloadActivity.this,e.getMessage(),Toast.LENGTH_SHORT).show();
                             }
 
                             @Override
@@ -107,12 +123,23 @@ public class DownloadActivity extends AppCompatActivity {
                     @Override
                     public void onClick(View v) {
                         downloadTask.remove();
+                        updateList();
                     }
                 });
 
             }
         };
 
+
+        updateList();
+
+        recyclerView = findViewById(R.id.recyclerView);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setAdapter(mInnerAdapter);
+
+    }
+
+    private void updateList(){
         disposable = Observable.create(new ObservableOnSubscribe<List<DownloadRequest>>() {
             @Override
             public void subscribe(ObservableEmitter<List<DownloadRequest>> emitter) throws Exception {
@@ -130,12 +157,6 @@ public class DownloadActivity extends AppCompatActivity {
 
             }
         });
-
-
-        recyclerView = findViewById(R.id.recyclerView);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.setAdapter(mInnerAdapter);
-
     }
 
 

@@ -7,5 +7,5 @@ package com.luckyaf.okdownload.speedContral;
  */
 public interface SpeedCallback {
 
-    void call(float speed);
+    void call(long speed);
 }

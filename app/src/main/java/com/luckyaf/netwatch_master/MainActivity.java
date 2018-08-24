@@ -60,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
 
                     @Override
                     public void onNext(Progress progress) {
-                        mProgressBar.setProgress((int) progress.getFraction() * 100);
+                        mProgressBar.setProgress((int) (progress.getFraction() * 100));
                         txt_result.setText(progress.getCurrentSize() + " / " + progress.getTotalSize());
                         txtSpeed.setText(progress.getSpeed() / 1024  + "  kb / s");
 
