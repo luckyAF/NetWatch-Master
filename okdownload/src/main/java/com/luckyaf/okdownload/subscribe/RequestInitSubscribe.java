@@ -36,9 +36,7 @@ public class RequestInitSubscribe implements ObservableOnSubscribe<DownloadReque
                 .build();
         try {
             Response response = OkDownload.getInstance().getOkHttpClient().newCall(request).execute();
-
             if (response != null && response.isSuccessful()) {
-                Logger.d("response",response.headers());
                 String filename = FileUtil.getNetFileName(response,downloadRequest.getUrl());
                 downloadRequest.setFileName(filename);
                 long totalSize = -1;

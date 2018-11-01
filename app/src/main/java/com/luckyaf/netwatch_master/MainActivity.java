@@ -8,7 +8,7 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.luckyaf.netwatch.utils.Logger;
+import com.luckyaf.netwatch.NetWatch;
 import com.luckyaf.okdownload.OkDownload;
 import com.luckyaf.okdownload.Progress;
 
@@ -33,6 +33,15 @@ public class MainActivity extends AppCompatActivity {
         txt_result = (TextView) findViewById(R.id.txt_result);
         mProgressBar = (ProgressBar) findViewById(R.id.progress);
         txtSpeed = findViewById(R.id.txtSpeed);
+
+
+        findViewById(R.id.btn_new_get).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+
         findViewById(R.id.btnSimpleDownload).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -45,6 +54,8 @@ public class MainActivity extends AppCompatActivity {
                 DownloadActivity.jumpFrom(MainActivity.this);
             }
         });
+
+
     }
 
 
@@ -54,7 +65,6 @@ public class MainActivity extends AppCompatActivity {
                 .subscribe(new Observer<Progress>() {
                     @Override
                     public void onSubscribe(Disposable d) {
-                        Logger.i("start ");
 
                     }
 
@@ -68,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
 
                     @Override
                     public void onError(Throwable e) {
-                        Logger.e(e);
+
                     }
 
                     @Override

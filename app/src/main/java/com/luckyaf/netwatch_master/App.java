@@ -26,7 +26,8 @@ public class App extends Application{
     }
 
     private void initNet(){
-        NetWatch.getInstance().init(this);
+        NetWatch.init(this,"http://www.baidu.com")
+                .build();
         OkDownload.getInstance().init(this);
     }
 }

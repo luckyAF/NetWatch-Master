@@ -15,7 +15,6 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import com.luckyaf.netwatch.utils.Logger;
 import com.luckyaf.netwatch_master.adapter.BaseAdapter;
 import com.luckyaf.netwatch_master.adapter.CommonViewHolder;
 import com.luckyaf.okdownload.DownloadManager;
@@ -152,9 +151,7 @@ public class DownloadActivity extends AppCompatActivity {
             public void accept(List<DownloadRequest> requests) throws Exception {
                 requests.clear();
                 requestList.addAll(requests);
-                Logger.d("progressList", requestList);
                 mInnerAdapter.notifyDataSetChanged();
-                Logger.d("getItemCount", mInnerAdapter.getItemCount());
 
             }
         });
